@@ -20,7 +20,7 @@ class Robot:
             time.sleep(0.05)
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
-            if (time.time() - self.starttime) > 30:
+            if (time.time() - self.starttime) > 30000:
               self.serial.write('D,0,0\n')
               self.serial.readline()
               break

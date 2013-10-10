@@ -9,7 +9,7 @@ class SensorModel:
         self.prevMotorLeftPos2 = self.prevMotorRightPos2 = 0
         self.phi = self.y = self.x = 0
         self.resetCounts()
-        self.R = 13.1
+        self.R = 4
     
     def resetCounts(self):
         self.s.write('G,0,0\n')

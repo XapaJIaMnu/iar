@@ -45,13 +45,13 @@ class Reactive:
             time.sleep(0.5)
         elif not turnUntilNear and (front <= keepdist or left <= keepdist or right <= keepdist):
             print "something in front! " + str(left) + ' ' + str(right)
-            #if controlSuggests != -1:            
-             # self.moveahead(0)
-              #print "Distance from home " + str(self.sensors.getDistanceFromHome())
-              #print "Angle from home " + str(self.sensors.getAngleFromHome())
-              #raw_input()              
-              #self.act(-1)
-              #return
+            if controlSuggests != -1:            
+              self.moveahead(0)
+              print "Distance from home " + str(self.sensors.getDistanceFromHome())
+              print "Angle from home " + str(self.sensors.getAngleFromHome())
+              raw_input()              
+              self.act(-1)
+              return
           # follow wall pick side with more opportunity (les ir light)
             if left <= right:
                 print "choosing to go right!"
