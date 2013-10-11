@@ -3,6 +3,7 @@
 import serial
 import time
 import Reactive
+import plot
 from math import sqrt
 
 serial = serial.Serial('/dev/ttyS0')
