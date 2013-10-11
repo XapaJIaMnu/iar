@@ -10,12 +10,12 @@ serial = serial.Serial('/dev/ttyS0')
 
 class Robot:
     def __init__(self):
-        self.starttime = time.time()
         global serial
         self.serial = serial
         self.reactive = Reactive.Reactive(self.serial);
 
     def start(self):
+        self.starttime = time.time()
         while(True):
             self.reactive.act(0)
             time.sleep(0.05)
