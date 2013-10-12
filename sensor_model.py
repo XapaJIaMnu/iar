@@ -10,6 +10,8 @@ class SensorModel:
         self.phi = self.y = self.x = 0
         self.resetCounts()
         self.R = 13.1
+        self.historyPosX = [0]
+        self.historyPosY = [0]
     
     def resetCounts(self):
         self.s.write('G,0,0\n')
@@ -20,13 +22,26 @@ class SensorModel:
         self.phi = self.phi - 0.5*(lDelta - rDelta)/(2*self.R)
         self.x = self.x + 0.5*(lDelta + rDelta)*math.cos(self.phi)
         self.y = self.y + 0.5*(lDelta + rDelta)*math.sin(self.phi)
+        self.historyPosX += [self.x]
+        self.historyPosY += [self.y]
         print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y);
 
     def getDistanceFromHome(self):
         return sqrt(self.x**2+self.y**2)
 
-    def getAngleFromHome(self):
+    def getStartingAngle(self):
         return math.degrees(self.phi)%360
+
+    def getAngleFromHome(self):
+        d = self.getDistanceFromHome()
+        if d == 0:
+            alpha = 0
+        else:
+            alpha = math.acos(self.x/d)
+        return math.degrees(alpha)%360
+
+    def getAngleToHome(self):
+        return (self.getAngleFromHome() + self.getStartingAngle()) % 360
 
     def calcOffsets(self):
         s = self.s

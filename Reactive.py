@@ -29,7 +29,7 @@ class Reactive:
         global turnedRightCount
         global roamCount
         global spinCount
-        self.sensors.updateModel()
+        #self.sensors.updateModel()
         left = self.sensors.senseleftdist()
         right = self.sensors.senserightdist()
         front = self.sensors.sensefrontdist()
@@ -63,12 +63,24 @@ class Reactive:
                 followWallOnRight = True
                 followWallOnLeft = False
                 turnUntilNear = True
-        elif roam:
+        elif roam and controlSuggests == 0:
             print "Roaming!"
             self.moveahead(speed) 
         else:
-            print "dunno what to do"
-       
+            if controlSuggests != 0:
+                turnUntilNear = False
+                print "Doing what control suggests " + str(controlSuggests)
+                action, val = controlSuggests
+                if val == -1:
+                    val = speed
+                if action  == "turnLeft":
+                    self.turnLeft(val)
+                elif action == "turnRight":
+                    self.turnRight(val)
+                elif action == "goStraight":
+                    self.moveahead(val)
+                return 
+           
         if followWallOnLeft:
            print "Following wall on the left"
            if turnUntilNear:
@@ -153,6 +165,7 @@ class Reactive:
             self.turnRight(4)
         else:
             self.turnLeft(4)
+        self.sensors.updatePos()
         time.sleep(0.2)
 
 
