@@ -26,9 +26,10 @@ class InteractivePlot:
     
     def update(self, xs, ys):
         plt.clf()
-        maxXY = max(max(xs), max(ys))
+        maxXY = max(abs(max(max(xs), max(ys))), abs(min(min(xs), min(ys))))
     #    maxY = max(ys)
         plt.xlim((-abs(maxXY + 30),abs(maxXY + 30)))
         plt.ylim((-abs(maxXY + 30),abs(maxXY + 30)))
+
         plt.plot(xs, ys)
         self.fig.canvas.draw()

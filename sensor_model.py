@@ -30,6 +30,8 @@ class SensorModel:
         return sqrt(self.x**2+self.y**2)
 
     def getStartingAngle(self):
+        print "Starting angle is " + str(math.degrees(self.phi))
+        print "Starting angle is " + str(math.degrees(self.phi)%360)
         return math.degrees(self.phi)%360
 
     def getAngleFromHome(self):
@@ -38,6 +40,9 @@ class SensorModel:
             alpha = 0
         else:
             alpha = math.acos(self.x/d)
+        if self.y > 0:
+            alpha = -alpha
+        print "Angle from home is " + str(math.degrees(alpha)%360)
         return math.degrees(alpha)%360
 
     def getAngleToHome(self):
@@ -143,11 +148,11 @@ class SensorModel:
     def senseleftdist(self):
         sensorvalue = self.senseleft()
         toret = 5
-        if sensorvalue <= 100:
+        if sensorvalue <= 130:
             toret = 5
-        elif sensorvalue < 150:
+        elif sensorvalue < 140:
             toret = 4
-        elif sensorvalue < 200:
+        elif sensorvalue < 160:
             toret = 3
         elif sensorvalue < 300:
             toret = 2
@@ -161,11 +166,11 @@ class SensorModel:
     def senserightdist(self):
         sensorvalue = self.senseright()
         toret = 5
-        if sensorvalue <= 100:
+        if sensorvalue <= 130:
             toret = 5
-        elif sensorvalue < 150:
+        elif sensorvalue < 140:
             toret = 4
-        elif sensorvalue < 200:
+        elif sensorvalue < 160:
             toret = 3
         elif sensorvalue < 300:
             toret = 2
@@ -181,11 +186,11 @@ class SensorModel:
     def sensefrontdist(self):
         sensorvalue = self.sensefront()
         toret = 5
-        if sensorvalue <= 100:
+        if sensorvalue <= 130:
             toret = 5
-        elif sensorvalue < 150:
+        elif sensorvalue < 140:
             toret = 4
-        elif sensorvalue < 200:
+        elif sensorvalue < 160:
             toret = 3
         elif sensorvalue < 300:
             toret = 2

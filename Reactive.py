@@ -69,6 +69,8 @@ class Reactive:
         else:
             if controlSuggests != 0:
                 turnUntilNear = False
+                followWallOnLeft = False
+                followWallOnRight = False
                 print "Doing what control suggests " + str(controlSuggests)
                 action, val = controlSuggests
                 if val == -1:
@@ -83,6 +85,16 @@ class Reactive:
            
         if followWallOnLeft:
            print "Following wall on the left"
+           
+           if controlSuggests != 0:
+                action, val = controlSuggests
+                if val == -1:
+                    val = speed
+                if action == "turnRight":
+                    self.turnRight(val)
+                    return
+
+
            if turnUntilNear:
                 print "Turning until near"
                 if left <= near and front > near:
@@ -119,6 +131,15 @@ class Reactive:
           
         elif followWallOnRight:
            print "Following wall on the right"
+
+           if controlSuggests != 0:
+                action, val = controlSuggests
+                if val == -1:
+                    val = speed
+                if action == "turnLeft":
+                    self.turnLeft(val)
+                    return
+
            if turnUntilNear:
                 print "Turning until near"
                 if right <= near and front > near:
