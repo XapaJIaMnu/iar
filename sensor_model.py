@@ -5,9 +5,12 @@ class SensorModel:
     def __init__(self, s):
         self.s = s
         self.array = []
+        self.lightarray = []
         self.prevMotorLeftPos = self.prevMotorRightPos = 0
         self.prevMotorLeftPos2 = self.prevMotorRightPos2 = 0
         self.phi = self.y = self.x = 0
+        self.foodX = self.foodY = self.foodPhi = 0
+        self.haveFood = False
         self.resetCounts()
         self.R = 13.1
         self.historyPosX = [0]
@@ -24,7 +27,15 @@ class SensorModel:
         self.y = self.y + 0.5*(lDelta + rDelta)*math.sin(self.phi)
         self.historyPosX += [self.x]
         self.historyPosY += [self.y]
-        print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y);
+        print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y)
+
+        #After updating position we should check for food
+        if self.isFood():
+            #If we have food, set that we picked it up and we should go home now
+            self.haveFood = True
+            self.foodX = self.x
+            self.foodY = self.y
+            self.foodPhi = self.phi
 
     def getDistanceFromHome(self):
         return sqrt(self.x**2+self.y**2)
@@ -101,7 +112,7 @@ class SensorModel:
 #            prevright = 5
 #            prevfront = 5
 
-
+        #Read proximity sensors
         self.s.write('N\n')
         line = self.s.readline()
         print line
@@ -117,9 +128,36 @@ class SensorModel:
         array[-1] = array[-1] - 200
         self.array = array; #Sensor array
 
+        self.getLightSensors();
 
         #speed = self.senseLeft() - self.left
         #self.left = self.left + speed * dT + K * (self.senseleft() - self.left - speed * dT);
+
+    def getLightSensors(self):
+        #Read light sensors
+        self.s.write('O\n')
+        lightline = self.s.readline()
+        print "Light sensors: " + str(lightline)
+
+        try:
+            array = map(int, lightline[2:].split(','))
+            ok = True
+        except: 
+            self.getLightSensors()
+            ok = False
+        if not ok:
+            return
+
+        self.lightarray = array
+
+    #Find out where there is food at our current position.
+    #Need to calibrate the lightarray value
+    def isFood(self):
+        if (self.enseleftdist() == 1) and (self.senserightdist() == 1) and (self.sensefrontdist() == 1) and sum(self.lightarray) > 2000:
+            return True;
+        else:
+            return False;
+
 
     def senseleft(self):
         #Weight the sensor to the side more
