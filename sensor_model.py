@@ -59,6 +59,29 @@ class SensorModel:
     def getAngleToHome(self):
         return (self.getAngleFromHome() + self.getStartingAngle()) % 360
 
+    #Same functions, but for food
+    def getDistanceFromFood(self):
+        return sqrt((self.x - self.foodX)**2+(self.y - self.foodY)**2)
+
+    def getFoodStartingAngle(self):
+        print "Starting food angle is " + str(math.degrees(self.foodPhi))
+        print "Starting food angle is " + str(math.degrees(self.foodPhi)%360)
+        return math.degrees(self.phi)%360
+
+    def getAngleFromFood(self):
+        d = self.getDistanceFromFood()
+        if d == 0:
+            alpha = 0
+        else:
+            alpha = math.acos(self.x/d)
+        if self.y > 0:
+            alpha = -alpha
+        print "Angle from food is " + str(math.degrees(alpha)%360)
+        return math.degrees(alpha)%360
+
+    def getAngleToFood(self):
+        return (self.getAngleFromFood() + self.getFoodStartingAngle()) % 360
+
     def calcOffsets(self):
         s = self.s
         s.write('H\n')
