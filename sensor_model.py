@@ -148,11 +148,11 @@ class SensorModel:
     def senseleftdist(self):
         sensorvalue = self.senseleft()
         toret = 5
-        if sensorvalue <= 130:
+        if sensorvalue <= 120:
             toret = 5
         elif sensorvalue < 140:
             toret = 4
-        elif sensorvalue < 160:
+        elif sensorvalue < 180:
             toret = 3
         elif sensorvalue < 300:
             toret = 2
@@ -166,11 +166,11 @@ class SensorModel:
     def senserightdist(self):
         sensorvalue = self.senseright()
         toret = 5
-        if sensorvalue <= 130:
+        if sensorvalue <= 120:
             toret = 5
         elif sensorvalue < 140:
             toret = 4
-        elif sensorvalue < 160:
+        elif sensorvalue < 180:
             toret = 3
         elif sensorvalue < 300:
             toret = 2
@@ -186,11 +186,11 @@ class SensorModel:
     def sensefrontdist(self):
         sensorvalue = self.sensefront()
         toret = 5
-        if sensorvalue <= 130:
+        if sensorvalue <= 120:
             toret = 5
         elif sensorvalue < 140:
             toret = 4
-        elif sensorvalue < 160:
+        elif sensorvalue < 180:
             toret = 3
         elif sensorvalue < 300:
             toret = 2
