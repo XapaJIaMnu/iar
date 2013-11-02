@@ -2,12 +2,12 @@ import math
 from math import sqrt
 import particles
 
-PARTICLES_NUM = 100
+PARTICLES_NUM = 1
 
 class SensorModel:
     def __init__(self, s):
         global PARTICLES_NUM
-        self.particles = Particles(PARTICLES_NUM)
+        self.particles = particles.Particles(PARTICLES_NUM)
         self.s = s
         self.array = []
         self.lightarray = []
@@ -29,7 +29,7 @@ class SensorModel:
         particles = self.particles
         (lDelta, rDelta) = self.calcOffsets()
 
-        particles.doPrediction(lDelta, rDelta)
+        particles.doPrediction(lDelta, rDelta, self.R)
 
         particles.doCorrection(self.array)
 
@@ -186,7 +186,7 @@ class SensorModel:
     #Find out where there is food at our current position.
     #Need to calibrate the lightarray value
     def isFood(self):
-        if (self.enseleftdist() == 1) and (self.senserightdist() == 1) and (self.sensefrontdist() == 1) and sum(self.lightarray) > 2000:
+        if (self.senseleftdist() == 1) and (self.senserightdist() == 1) and (self.sensefrontdist() == 1) and sum(self.lightarray) > 2000:
             return True;
         else:
             return False;

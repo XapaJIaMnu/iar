@@ -5,10 +5,11 @@ import time
 import Reactive
 import plot
 from math import sqrt
+import pygame
 
 serial = serial.Serial('/dev/ttyS0')
 
-IPLOT=False
+IPLOT=True
 
 TURNING_TOWARDS_HOME = False
 GOING_TOWARDS_FOOD = False 
@@ -28,12 +29,12 @@ class Robot:
         global serial
         global name
 
-        pygame.init()        
+        #pygame.init()        
 
-        self.windowSurfaceObj = pygame.display.set_mode((640, 480))
-        pygame.display.set_caption(name)
+        #self.windowSurfaceObj = pygame.display.set_mode((640, 480))
+        #pygame.display.set_caption(name)
 
-        self.mapSurfaceObj = pygame.image.load('map.png')        
+        #self.mapSurfaceObj = pygame.image.load('arena.jpg')        
 
         self.serial = serial
         self.reactive = Reactive.Reactive(self.serial);
@@ -49,21 +50,25 @@ class Robot:
         global DEFAULT_SPEED_ACTIVE
         global DEFAULT_SPEED_HOME
         global EXPLORE_FOR
+        global GOING_TOWARDS_FOOD
         self.starttime = time.time()
         prevDistToHome = 100000
         prevDistToFood = 100000
         suggestAction = 0
         perceive_speed = DEFAULT_SPEED_ACTIVE
         while(True):
-            self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
+            #self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
             print
             print
             extra_sleep = 0
             self.reactive.sensors.updateModel()
             if IPLOT:
                 self.ip.update(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY)
-            for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
-                
+
+            prevx, prevy = (0, 0)
+            #for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
+            #    pygame.draw.line(windowSurfaceObj, (0, 0, 255), (prevx, prevy), (x, y))
+            #    prevx, prevy = (x, y)
 
             if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
@@ -109,8 +114,9 @@ class Robot:
                         extra_sleep += 0.1
                     else:
                         #Detect that we have picked up the food here.
-                        if self.reactive.sensors.haveFood = True:
-                            print "Food!!!"self.reactive.sensors.haveFood = False:
+                        if self.reactive.sensors.haveFood == True:
+                            print "Food!!!"
+                            self.reactive.sensors.haveFood = False
                             self.serial.write('D,0,0\n')
                             self.serial.readline()
                             TURNING_TOWARDS_HOME = True
@@ -173,25 +179,25 @@ class Robot:
                             self.serial.write('L,0,2\n')
                             self.serial.readline()
                         #Drop off any food that we might have
-                        self.reactive.sensors.haveFood = False:
+                        self.reactive.sensors.haveFood = False
                         TURNING_TOWARDS_HOME = False
                         GOING_TOWARDS_FOOD = True
                         
 
                 prevDistToHome = distToHome
             self.reactive.act(suggestAction)
-            #time.sleep(perceive_speed + extra_sleep)
+            time.sleep(perceive_speed + extra_sleep)
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
             #If in initial roaming state, switch to Going_HOME state when we find our food.
             if not TURNING_TOWARDS_HOME and not GOING_TOWARDS_FOOD:
-                if self.reactive.sensors.haveFood =True:
+                if self.reactive.sensors.haveFood == True:
                     self.serial.write('D,0,0\n')
                     self.serial.readline()
                     TURNING_TOWARDS_HOME = True
                     perceive_speed = DEFAULT_SPEED_HOME
-            pygame.display.update()
-            clock.tick(20) # run 20 times per second, roughly 50ms
+            #pygame.display.update()
+            #clock.tick(20) # run 20 times per second, roughly 50ms
  
     def stop(self):
         self.serial.write('D,0,0\n')

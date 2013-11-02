@@ -10,9 +10,9 @@ class Particle:
 class Particles:
     def __init__(self, number):
         self.num = number
-        particles = [Particle() for _ in range(number)]
+        self.particles = [Particle() for _ in range(number)]
 
-    def doPrediction(lDelta, rDelta, R):
+    def doPrediction(self, lDelta, rDelta, R):
         global SCALE
 
         particles = self.particles
@@ -20,11 +20,11 @@ class Particles:
         for particle in particles:
             particle.phi = particle.phi - 0.5*(lDelta - rDelta)/(2*R)
             # add gaussian noise with standard diviation SCALE
-            particle.phi += np.random.normal(scale=SCALE)
+            #particle.phi += np.random.normal(scale=SCALE)
             particle.x = particle.x + 0.5*(lDelta + rDelta)*math.cos(particle.phi)
             particle.y = particle.y + 0.5*(lDelta + rDelta)*math.sin(particle.phi)
 
-    def doCorrection(sensors):
+    def doCorrection(self, sensors):
         particles = self.particles
         normP = 0
         for particle in particles:
@@ -38,18 +38,18 @@ class Particles:
 
         n = len(particles)
 
-        sample = np.random_sample(n) 
+        sample = np.random.random_sample(n) 
 
         newParticles = []
         self.particlesX = []
         self.particlesY = []
 
-        for prop in sample:
+        for prob in sample:
             accumProb = 0
             current = 0
 
-            while accumProb < prob && current < n:
-                accumProb += float(particles[current]) / normP
+            while accumProb < prob and current < n:
+                accumProb += float(particles[current].p) / normP
                 current += 1
 
             newParticles.append(particles[current-1])
@@ -60,7 +60,7 @@ class Particles:
 
         particles = newParticles
 
-    def getMeanPos():
+    def getMeanPos(self):
         particles = self.particles
 
         meanX = 0
