@@ -1,8 +1,13 @@
 import math
+import numpy as np
 from math import sqrt
+import particles
+
+PARTICLES_NUM = 100
 
 class SensorModel:
     def __init__(self, s):
+        global PARTICLES_NUM
         self.s = s
         self.array = []
         self.prevMotorLeftPos = self.prevMotorRightPos = 0
@@ -12,16 +17,26 @@ class SensorModel:
         self.R = 13.1
         self.historyPosX = [0]
         self.historyPosY = [0]
+        self.particles = Particles(PARTICLES_NUM)
     
     def resetCounts(self):
         self.s.write('G,0,0\n')
         self.s.readline()    
 
     def updatePos(self):
+        partices = self.particles
         (lDelta, rDelta) = self.calcOffsets()
+        #TODO 1 when calculating particle.phi, add random noise
+        particles.doPredition(lDelta, rDelta)
+        
+        #TODO 2 draw the particles that match the observations with higher probability
+        particles.doCorrection()
+
+        #TODO 3 phi, x, y are the mean of particle.x, particle.y, particle.phi for all particles
         self.phi = self.phi - 0.5*(lDelta - rDelta)/(2*self.R)
         self.x = self.x + 0.5*(lDelta + rDelta)*math.cos(self.phi)
         self.y = self.y + 0.5*(lDelta + rDelta)*math.sin(self.phi)
+        self.phi, self.x, self.y = particles.getMeanPos()
         self.historyPosX += [self.x]
         self.historyPosY += [self.y]
         print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y);
