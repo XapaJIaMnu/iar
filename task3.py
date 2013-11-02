@@ -8,6 +8,7 @@ from math import sqrt
 import pygame
 from pygame.locals import *
 import sys
+import map_reader
 
 serial = serial.Serial('/dev/ttyS0', timeout=1)
 
@@ -31,16 +32,27 @@ class Robot:
         global serial
         global name
 
+        mapfile = open('map.txt')
+        maplines = mapfile.readlines()
+        self.map = [map(int, line.split()) for line in maplines]
+        self.rownum = len(self.map)
+        self.colnum = len(self.map[0])
+
+
         pygame.init()        
 
-        self.windowSurfaceObj = pygame.display.set_mode((640, 480))
+        self.windowSurfaceObj = pygame.display.set_mode((800, 533))
         self.clock = pygame.time.Clock()
         pygame.display.set_caption(name)
+
+        self.mapReader = map_reader.Map(map)
 
         #self.mapSurfaceObj = pygame.image.load('arena.jpg')        
 
         self.serial = serial
         self.reactive = Reactive.Reactive(self.serial);
+
+
         if IPLOT:
             self.ip = plot.InteractivePlot()
 
@@ -67,9 +79,17 @@ class Robot:
                     pygame.quit()
                     stop() 
                     sys.exit()
+                elif event.type == MOUSEBUTTONUP:
+                    print "Click at ", str(event.pos)
                 elif event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         pygame.event.post(pygame.event.Event(QUIT))
+
+            for (row, y) in zip(self.map, range(self.rownum)):
+                for (col, x) in zip(row, range(self.colnum)):
+                    if col == 1:
+                       pygame.draw.circle(self.windowSurfaceObj, (0, 0, 0), (x, y), 20, 0)
+
             print
             print
             extra_sleep = 0
@@ -81,7 +101,7 @@ class Robot:
             for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
                 pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (x, y))
                 prevx, prevy = (x, y)
-
+            
             if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()

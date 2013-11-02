@@ -6,6 +6,8 @@ SCALE = 1
 class Particle:
     def __init__(self):
         self.phi = self.x = self.y = self.p = 0
+        self.x = 500
+        self.y = 260
 
 class Particles:
     def __init__(self, number):
