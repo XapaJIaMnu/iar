@@ -45,7 +45,7 @@ class Robot:
         self.clock = pygame.time.Clock()
         pygame.display.set_caption(name)
 
-        self.mapReader = map_reader.Map(map)
+        self.mapReader = map_reader.Map(self.map)
 
         #self.mapSurfaceObj = pygame.image.load('arena.jpg')        
 
@@ -234,8 +234,11 @@ class Robot:
                 prevDistToHome = distToHome
             self.reactive.act(suggestAction)
             #time.sleep(perceive_speed + extra_sleep)
+            map_information = self.mapReader.getNearbyWalls(self.reactive.sensors.x, self.reactive.sensors.y, self.reactive.sensors.phi)
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
+            print "Map array is " + str(map_information)
+     
             #If in initial roaming state, switch to Going_HOME state when we find our food.
             if not TURNING_TOWARDS_HOME and not GOING_TOWARDS_FOOD:
                 if self.reactive.sensors.haveFood == True:

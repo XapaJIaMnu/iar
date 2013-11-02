@@ -16,6 +16,9 @@ class Map:
         self.map_array = map
 
     def getNearbyWalls(self, x, y, phi):
+        xx = x
+        x = int(y) # TODO fix
+        y = int(xx)
         map_array = self.map_array
         #map - 5 px = 1sm
         #robot diametur 5.5 sm., so we need 2.75*5 = 14 px radius
@@ -26,8 +29,13 @@ class Map:
         for i in range(1,6):
             katety = int(floor(cos(phi)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
             katetx = int(floor(sin(phi)/14 + i*5))
+            if katetx+x > 799 or katety+y > 532:
+                ret_array.append(i)
+                break;
 
-            if (map_array[katetx][katety] == 1):
+            print katetx + x
+            print katety + y
+            if (map_array[katetx + x][katety + y] == 1):
                 ret_array.append(i)
                 break;
             else:
@@ -39,8 +47,11 @@ class Map:
         for i in range(1,6):
             katety = int(floor(cos(phi-90)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
             katetx = int(floor(sin(phi-90)/14 + i*5))
+            if katetx+x > 799 or katety+y > 532:
+                ret_array.append(i)
+                break;
 
-            if (map_array[katetx][katety] == 1):
+            if (map_array[katetx + x][katety + y] == 1):
                 ret_array.append(i)
                 break;
             else:
@@ -52,8 +63,11 @@ class Map:
         for i in range(1,6):
             katety = int(floor(cos(phi-90)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
             katetx = int(floor(sin(phi-90)/14 + i*5))
+            if katetx+x > 799 or katety+y > 532:
+                ret_array.append(i)
+                break;
 
-            if (map_array[katetx][katety] == 1):
+            if (map_array[katetx + x][katety + y] == 1):
                 ret_array.append(i)
                 break;
             else:
@@ -65,5 +79,9 @@ class Map:
 
 
 
-        
-
+def test():
+    map_obj = Map(map_array)
+    for i in range(800):
+        for j in range(533):
+            if map_obj.getNearbyWalls(i,j,0) != [0,0,0]:
+                print "X is " + str(i) + " Y is " + str(j)
