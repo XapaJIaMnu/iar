@@ -8,7 +8,7 @@ from math import sqrt
 
 serial = serial.Serial('/dev/ttyS0')
 
-IPLOT=True
+IPLOT=False
 
 TURNING_TOWARDS_HOME = False
 GOING_TOWARDS_FOOD = False 
@@ -21,9 +21,20 @@ DEFAULT_SPEED_ACTIVE = 0.05
 DEFAULT_SPEED_HOME = 0.05
 EXPLORE_FOR = 30
 
+name = "IAR"
+
 class Robot:
     def __init__(self):
         global serial
+        global name
+
+        pygame.init()        
+
+        self.windowSurfaceObj = pygame.display.set_mode((640, 480))
+        pygame.display.set_caption(name)
+
+        self.mapSurfaceObj = pygame.image.load('map.png')        
+
         self.serial = serial
         self.reactive = Reactive.Reactive(self.serial);
         if IPLOT:
@@ -44,12 +55,15 @@ class Robot:
         suggestAction = 0
         perceive_speed = DEFAULT_SPEED_ACTIVE
         while(True):
+            self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
             print
             print
             extra_sleep = 0
             self.reactive.sensors.updateModel()
             if IPLOT:
                 self.ip.update(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY)
+            for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
+                
 
             if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
@@ -166,7 +180,7 @@ class Robot:
 
                 prevDistToHome = distToHome
             self.reactive.act(suggestAction)
-            time.sleep(perceive_speed + extra_sleep)
+            #time.sleep(perceive_speed + extra_sleep)
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
             #If in initial roaming state, switch to Going_HOME state when we find our food.
@@ -176,6 +190,8 @@ class Robot:
                     self.serial.readline()
                     TURNING_TOWARDS_HOME = True
                     perceive_speed = DEFAULT_SPEED_HOME
+            pygame.display.update()
+            clock.tick(20) # run 20 times per second, roughly 50ms
  
     def stop(self):
         self.serial.write('D,0,0\n')

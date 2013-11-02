@@ -25,5 +25,5 @@ for i in reversed(range(len(map_array))):
 #    print >> output, str(line).replace('[','').replace(']', '').replace(',', '')
 #    print >> output_human, str(line).replace('[','').replace(']', '').replace(',', '').replace(' ','')
 
-output.close
+output.close()
 

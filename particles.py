@@ -41,6 +41,8 @@ class Particles:
         sample = np.random_sample(n) 
 
         newParticles = []
+        self.particlesX = []
+        self.particlesY = []
 
         for prop in sample:
             accumProb = 0
@@ -51,6 +53,8 @@ class Particles:
                 current += 1
 
             newParticles.append(particles[current-1])
+            self.particlesX.append(particles[current-1].x)
+            self.particlesY.append(particles[current-1].y)
             
         assert len(newParticles) == len(particles)
 
@@ -62,11 +66,11 @@ class Particles:
         meanX = 0
         meanY = 0
         meanPhi = 0
-        n = len(particles)
+        n = float(len(particles))
 
         for particle in particles:
             meanX += particle.x
             meanY += particle.y
             meanPhi += particle.phi
 
-        return (meanX / n, meanY / n, meanPhi / n)
+        return (meanPhi / n, meanX / n, meanY / n)

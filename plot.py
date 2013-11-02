@@ -24,7 +24,7 @@ class InteractivePlot:
         plt.ion()
         self.fig = plt.figure()
     
-    def update(self, xs, ys):
+    def update(self, xs, ys, pointsXs, pointYs):
         plt.clf()
         maxXY = max(abs(max(max(xs), max(ys))), abs(min(min(xs), min(ys))))
     #    maxY = max(ys)
@@ -32,4 +32,7 @@ class InteractivePlot:
         plt.ylim((-abs(maxXY + 30),abs(maxXY + 30)))
 
         plt.plot(xs, ys)
+
+        plt.plot(pointXs, pointYs, 'go')
+
         self.fig.canvas.draw()
