@@ -5,7 +5,7 @@ import time
 import Reactive
 import plot
 from math import sqrt
-import pygame
+# import pygame
 
 serial = serial.Serial('/dev/ttyS0')
 
@@ -78,16 +78,22 @@ class Robot:
                 self.reactive.sensors.updatePos()
                 angle = (180-robot.reactive.sensors.getAngleToFood())%360
                 other_angle = 360-angle
-                print "Turning towards home angle is " + str(angle) + " other one is " + str(other_angle)
+                print "Turning towards food angle is " + str(angle) + " other one is " + str(other_angle)
 
 
                 distToFood = self.reactive.sensors.getDistanceFromFood()
 
                 if distToFood < DIST_NEAR and distToFood > prevDistToFood:
-                    print "Home!!!"
+                    print "Food!!!"
                     self.serial.write('D,0,0\n')
                     self.serial.readline()
-                    return
+                    if self.reactive.sensors.haveFood == True:
+                        print "Food!!!"
+                        self.reactive.sensors.haveFood = False
+                        self.serial.write('D,0,0\n')
+                        self.serial.readline()
+                        TURNING_TOWARDS_HOME = True
+                        GOING_TOWARDS_FOOD = False
 
                 if  angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
                     if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:
@@ -97,10 +103,10 @@ class Robot:
                     else:
                         turnSpeed = -1
                     if angle > 180:
-                        print "Suggesting left"
+                        print "Suggesting left for food"
                         suggestAction = ("turnRight", turnSpeed)
                     else:
-                        print "Suggesting right"
+                        print "Suggesting right for food"
                         suggestAction = ("turnLeft", turnSpeed)
                 else:
                     print "Going to food!"
@@ -141,7 +147,16 @@ class Robot:
                     print "Home!!!"
                     self.serial.write('D,0,0\n')
                     self.serial.readline()
-                    return
+                    for i in range(6):
+                        time.sleep(0.3)
+                        self.serial.write('L,1,2\n')
+                        self.serial.readline()
+                        self.serial.write('L,0,2\n')
+                        self.serial.readline()
+                    #Drop off any food that we might have
+                    self.reactive.sensors.haveFood = False
+                    TURNING_TOWARDS_HOME = False
+                    GOING_TOWARDS_FOOD = True
 
                 if  angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
                     if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:

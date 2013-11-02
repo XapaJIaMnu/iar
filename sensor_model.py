@@ -76,14 +76,14 @@ class SensorModel:
     def getFoodStartingAngle(self):
         print "Starting food angle is " + str(math.degrees(self.foodPhi))
         print "Starting food angle is " + str(math.degrees(self.foodPhi)%360)
-        return math.degrees(self.phi)%360
+        return math.degrees(self.phi - self.foodPhi)%360
 
     def getAngleFromFood(self):
         d = self.getDistanceFromFood()
         if d == 0:
             alpha = 0
         else:
-            alpha = math.acos(self.x/d)
+            alpha = math.acos((self.x-self.foodX)/d)
         if self.y > 0:
             alpha = -alpha
         print "Angle from food is " + str(math.degrees(alpha)%360)

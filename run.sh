@@ -1,1 +1,1 @@
-ipython -wthread -pylab -i task2.py
+ipython -wthread -pylab -i task3.py
