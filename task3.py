@@ -10,7 +10,8 @@ serial = serial.Serial('/dev/ttyS0')
 
 IPLOT=True
 
-TURNING_TOWARDS_HOME = False 
+TURNING_TOWARDS_HOME = False
+GOING_TOWARDS_FOOD = False 
 ANGLE_THRESH = 3 
 ANGLE_PRECISE_THRESH = 20
 ANGLE_CAREFUL_THRESH = 10
@@ -39,6 +40,7 @@ class Robot:
         global EXPLORE_FOR
         self.starttime = time.time()
         prevDistToHome = 100000
+        prevDistToFood = 100000
         suggestAction = 0
         perceive_speed = DEFAULT_SPEED_ACTIVE
         while(True):
@@ -48,6 +50,60 @@ class Robot:
             self.reactive.sensors.updateModel()
             if IPLOT:
                 self.ip.update(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY)
+
+            if GOING_TOWARDS_FOOD:
+                #self.serial.write('D,0,0\n')
+                #self.serial.readline()
+                #time.sleep(0.1)
+                self.reactive.sensors.updateModel()
+                self.reactive.sensors.updatePos()
+                angle = (180-robot.reactive.sensors.getAngleToFood())%360
+                other_angle = 360-angle
+                print "Turning towards home angle is " + str(angle) + " other one is " + str(other_angle)
+
+
+                distToFood = self.reactive.sensors.getDistanceFromFood()
+
+                if distToFood < DIST_NEAR and distToFood > prevDistToFood:
+                    print "Home!!!"
+                    self.serial.write('D,0,0\n')
+                    self.serial.readline()
+                    return
+
+                if  angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
+                    if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:
+                        turnSpeed = 1
+                    elif angle < ANGLE_CAREFUL_THRESH or other_angle < ANGLE_CAREFUL_THRESH:
+                        turnSpeed = 2
+                    else:
+                        turnSpeed = -1
+                    if angle > 180:
+                        print "Suggesting left"
+                        suggestAction = ("turnRight", turnSpeed)
+                    else:
+                        print "Suggesting right"
+                        suggestAction = ("turnLeft", turnSpeed)
+                else:
+                    print "Going to food!"
+                    
+                    if distToFood > DIST_THRESH:
+                        if distToFood < DIST_NEAR:
+                            speed = 2
+                        else:
+                            speed = 5
+                        suggestAction = ("goStraight", speed)
+                        extra_sleep += 0.1
+                    else:
+                        #Detect that we have picked up the food here.
+                        if self.reactive.sensors.haveFood = True:
+                            print "Food!!!"self.reactive.sensors.haveFood = False:
+                            self.serial.write('D,0,0\n')
+                            self.serial.readline()
+                            TURNING_TOWARDS_HOME = True
+                            GOING_TOWARDS_FOOD = False
+
+                prevDistToFood = distToFood
+
             if TURNING_TOWARDS_HOME:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()
@@ -94,20 +150,32 @@ class Robot:
                         print "Home!!!"
                         self.serial.write('D,0,0\n')
                         self.serial.readline()
-                        return
+                        #Flash LED lights here.
+                        #Change state 6 times which equals to flashing three times
+                        for i in range(6):
+                            time.sleep(0.3)
+                            self.serial.write('L,1,2\n')
+                            self.serial.readline()
+                            self.serial.write('L,0,2\n')
+                            self.serial.readline()
+                        #Drop off any food that we might have
+                        self.reactive.sensors.haveFood = False:
+                        TURNING_TOWARDS_HOME = False
+                        GOING_TOWARDS_FOOD = True
+                        
 
                 prevDistToHome = distToHome
             self.reactive.act(suggestAction)
             time.sleep(perceive_speed + extra_sleep)
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
-            if not TURNING_TOWARDS_HOME and (time.time() - self.starttime) > EXPLORE_FOR:
-              self.serial.write('D,0,0\n')
-              self.serial.readline()
-   #           plot.plotPath(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY)
-              TURNING_TOWARDS_HOME = True
-              perceive_speed = DEFAULT_SPEED_HOME
-              #self.distToHome = self.reactive.sensors.getDistanceFromHome()
+            #If in initial roaming state, switch to Going_HOME state when we find our food.
+            if not TURNING_TOWARDS_HOME and not GOING_TOWARDS_FOOD:
+                if self.reactive.sensors.haveFood =True:
+                    self.serial.write('D,0,0\n')
+                    self.serial.readline()
+                    TURNING_TOWARDS_HOME = True
+                    perceive_speed = DEFAULT_SPEED_HOME
  
     def stop(self):
         self.serial.write('D,0,0\n')
