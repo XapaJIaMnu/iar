@@ -19,9 +19,8 @@ class Map:
         map_array = self.map_array
         #map - 5 px = 1sm
         #robot diametur 5.5 sm., so we need 2.75*5 = 14 px radius
-        ret_front = [] # [front1sm,front2sm,front3sm,front4sm,front5sm]
-        ret_left = [] # [left1sm,left2sm,left3sm,left4sm,left5sm]
-        ret_right = [] # [right1sm,right2sm,right3sm,right4sm,right5sm]
+        ret_array = [] # [front, left, right
+        
 
         #See if we have wall 1,2,3,4,5 sm in front of us
         for i in range(1,6):
@@ -29,9 +28,12 @@ class Map:
             katetx = int(floor(sin(phi)/14 + i*5))
 
             if (map_array[katetx][katety] == 1):
-                ret_front.append(1)
+                ret_array.append(i)
+                break;
             else:
-                ret_front.append(0)
+                if (i == 5):
+                    #We haven't found a wall, return 0
+                    ret_array.append(0)
 
         #See if we have wall 1,2,3,4,5 sm right of us
         for i in range(1,6):
@@ -39,9 +41,12 @@ class Map:
             katetx = int(floor(sin(phi-90)/14 + i*5))
 
             if (map_array[katetx][katety] == 1):
-                ret_right.append(1)
+                ret_array.append(i)
+                break;
             else:
-                ret_right.append(0)
+                if (i == 5):
+                    #We haven't found a wall, return 0
+                    ret_array.append(0)
 
         #See if we have wall 1,2,3,4,5 sm left of us
         for i in range(1,6):
@@ -49,11 +54,14 @@ class Map:
             katetx = int(floor(sin(phi-90)/14 + i*5))
 
             if (map_array[katetx][katety] == 1):
-                ret_left.append(1)
+                ret_array.append(i)
+                break;
             else:
-                ret_left.append(0)
+                if (i == 5):
+                    #We haven't found a wall, return 0
+                    ret_array.append(0)
 
-        return (ret_front, ret_right, ret_left)
+        return ret_array
 
 
 
