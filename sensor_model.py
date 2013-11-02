@@ -149,6 +149,8 @@ class SensorModel:
         self.s.write('N\n')
         line = self.s.readline()
         print line
+        if line == "":
+            return
         try:
             array = map(int, line[2:].split(','))
             ok = True

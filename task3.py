@@ -5,11 +5,13 @@ import time
 import Reactive
 import plot
 from math import sqrt
-# import pygame
+import pygame
+from pygame.locals import *
+import sys
 
-serial = serial.Serial('/dev/ttyS0')
+serial = serial.Serial('/dev/ttyS0', timeout=1)
 
-IPLOT=True
+IPLOT = False 
 
 TURNING_TOWARDS_HOME = False
 GOING_TOWARDS_FOOD = False 
@@ -29,10 +31,11 @@ class Robot:
         global serial
         global name
 
-        #pygame.init()        
+        pygame.init()        
 
-        #self.windowSurfaceObj = pygame.display.set_mode((640, 480))
-        #pygame.display.set_caption(name)
+        self.windowSurfaceObj = pygame.display.set_mode((640, 480))
+        self.clock = pygame.time.Clock()
+        pygame.display.set_caption(name)
 
         #self.mapSurfaceObj = pygame.image.load('arena.jpg')        
 
@@ -58,6 +61,15 @@ class Robot:
         perceive_speed = DEFAULT_SPEED_ACTIVE
         while(True):
             #self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
+            self.windowSurfaceObj.fill((255, 255, 255))
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    stop() 
+                    sys.exit()
+                elif event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        pygame.event.post(pygame.event.Event(QUIT))
             print
             print
             extra_sleep = 0
@@ -66,9 +78,9 @@ class Robot:
                 self.ip.update(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY)
 
             prevx, prevy = (0, 0)
-            #for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
-            #    pygame.draw.line(windowSurfaceObj, (0, 0, 255), (prevx, prevy), (x, y))
-            #    prevx, prevy = (x, y)
+            for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
+                pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (x, y))
+                prevx, prevy = (x, y)
 
             if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
@@ -201,7 +213,7 @@ class Robot:
 
                 prevDistToHome = distToHome
             self.reactive.act(suggestAction)
-            time.sleep(perceive_speed + extra_sleep)
+            #time.sleep(perceive_speed + extra_sleep)
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
             #If in initial roaming state, switch to Going_HOME state when we find our food.
@@ -211,8 +223,8 @@ class Robot:
                     self.serial.readline()
                     TURNING_TOWARDS_HOME = True
                     perceive_speed = DEFAULT_SPEED_HOME
-            #pygame.display.update()
-            #clock.tick(20) # run 20 times per second, roughly 50ms
+            pygame.display.update()
+            self.clock.tick(20) # run 20 times per second, roughly 50ms
  
     def stop(self):
         self.serial.write('D,0,0\n')
