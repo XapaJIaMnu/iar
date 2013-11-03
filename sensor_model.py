@@ -65,8 +65,8 @@ class SensorModel:
         if d == 0:
             alpha = 0
         else:
-            alpha = math.acos((self.x-self.startX)/d)
-        if self.y > 0:
+            alpha = math.acos((self.startX-self.x)/d)
+        if self.y - self.startY > 0:
             alpha = -alpha
         #print "Angle from home is " + str(math.degrees(alpha)%360)
         return math.degrees(alpha)%360

@@ -187,8 +187,11 @@ class Robot:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()
                 #time.sleep(0.1)
+                
+
                 self.reactive.sensors.updateModel()
                 self.reactive.sensors.updatePos()
+                angleRad = np.radians(robot.reactive.sensors.getAngleToHome())
                 angle = (180-robot.reactive.sensors.getAngleToHome())%360
                 other_angle = 360-angle
                 print "Turning towards home angle is " + str(angle) + " other one is " + str(other_angle)
@@ -196,6 +199,11 @@ class Robot:
 
                 distToHome = self.reactive.sensors.getDistanceFromHome()
                 print "DistToHome is ", distToHome
+
+
+                homePos = robotToMap(self.reactive.sensors.x + distToHome * np.cos(angleRad), self.reactive.sensors.y + distToHome * np.sin(angleRad))
+
+                pygame.draw.circle(self.windowSurfaceObj, (0, 0, 255), homePos, 20, 0)
 
                 if distToHome < DIST_NEAR and distToHome > prevDistToHome:
                     print "Home!!!"
