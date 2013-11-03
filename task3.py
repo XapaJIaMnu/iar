@@ -15,6 +15,7 @@ import sensor_model
 serial = serial.Serial('/dev/ttyS0', timeout=1)
 
 IPLOT = False 
+LOCALIZATION_CALIBRATION_MODE = False 
 
 TURNING_TOWARDS_HOME = False
 GOING_TOWARDS_FOOD = False 
@@ -67,6 +68,8 @@ class Robot:
         global DEFAULT_SPEED_HOME
         global EXPLORE_FOR
         global GOING_TOWARDS_FOOD
+        global LOCALIZATION_CALIBRATION_MODE
+
         self.starttime = time.time()
         prevDistToHome = 100000
         prevDistToFood = 100000
@@ -84,6 +87,8 @@ class Robot:
                     sys.exit()
                 elif event.type == MOUSEBUTTONUP:
                     print "Click at ", str(event.pos)
+                    testNearbyWalls(event.pos[0], event.pos[1], 0) 
+                    pygame.draw.circle(self.windowSurfaceObj, (255, 0, 0), event.pos, 41, 0)
                 elif event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         pygame.event.post(pygame.event.Event(QUIT))
@@ -93,6 +98,10 @@ class Robot:
                     if col == 1:
                        pygame.draw.circle(self.windowSurfaceObj, (0, 0, 0), (x, y), 20, 0)
 
+            if LOCALIZATION_CALIBRATION_MODE:
+                pygame.display.update()
+                self.clock.tick(2) # run 20 times per second, roughly 50ms
+                continue
             print
             print
             extra_sleep = 0
@@ -282,7 +291,7 @@ def robotToMap(x, y):
 def testNearbyWalls(x, y, phi):
     sensors = robot.reactive.sensors
     sensors.updateModel()
-    print str((sensors.sensefrontdist(), sensor_model.sensorToCm(sensors.array[0]), sensor_model.sensorToCm(sensors.array[5])))
+    print str((sensors.sensefrontdist(), sensor_model.sensorToCmLeft(sensors.array[0]), sensor_model.sensorToCmRight(sensors.array[5])))
     print robot.mapReader.getNearbyWalls(x, y, phi)
 
 robot = Robot()

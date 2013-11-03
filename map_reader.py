@@ -29,6 +29,7 @@ class Map:
         #robot diametur 5.5 sm., so we need 2.75*5 = 14 px radius
         ret_array = [] # [front, left, right
 
+        # front
         found = False
         for i in range(1, 6):
             krow, kcol = calcKatets(x, y, phi, i)
@@ -43,6 +44,7 @@ class Map:
         if not found:
             ret_array.append(5)
 
+        # left
         found = False
         for i in range(1, 6):
             krow, kcol = calcKatets(x, y, phi+np.pi/2, i)
@@ -57,6 +59,7 @@ class Map:
         if not found:
             ret_array.append(5)
 
+        # right
         found = False
         for i in range(1, 6):
             krow, kcol = calcKatets(x, y, phi-np.pi/2, i)

@@ -220,7 +220,7 @@ class SensorModel:
     def senseleftdist(self):
         sensorvalue = self.senseleft()
 
-        toret = sensorToCm(sensorvalue)
+        toret = sensorToCmLeft(sensorvalue)
 
         print "senseleftdist " + str(toret)
 
@@ -229,7 +229,7 @@ class SensorModel:
     def senserightdist(self):
         sensorvalue = self.senseright()
 
-        toret = sensorToCm(sensorvalue)
+        toret = sensorToCmRight(sensorvalue)
 
         print "senserightdist " + str(toret)
 
@@ -240,13 +240,41 @@ class SensorModel:
     def sensefrontdist(self):
         sensorvalue = self.sensefront()
 
-        toret = sensorToCm(sensorvalue)
+        toret = sensorToCmFront(sensorvalue)
 
         print "sensefrontdist " + str(toret)
 
         return toret
 
-def sensorToCm(sensorvalue):
+def sensorToCmLeft(sensorvalue):
+    if sensorvalue <= 160:
+        toret = 5
+    elif sensorvalue < 200:
+        toret = 4
+    elif sensorvalue < 250:
+        toret = 3
+    elif sensorvalue < 310:
+        toret = 2
+    else:
+        toret = 1
+    return toret
+
+def sensorToCmRight(sensorvalue):
+    if sensorvalue <= 160:
+        toret = 5
+    elif sensorvalue < 200:
+        toret = 4
+    elif sensorvalue < 250:
+        toret = 3
+    elif sensorvalue < 310:
+        toret = 2
+    else:
+        toret = 1
+    return toret
+
+
+
+def sensorToCmFront(sensorvalue):
     if sensorvalue <= 120:
         toret = 5
     elif sensorvalue < 140:
@@ -258,5 +286,6 @@ def sensorToCm(sensorvalue):
     else:
         toret = 1
     return toret
+
 
 
