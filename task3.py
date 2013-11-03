@@ -52,7 +52,7 @@ class Robot:
         #self.mapSurfaceObj = pygame.image.load('arena.jpg')        
 
         self.serial = serial
-        self.reactive = Reactive.Reactive(self.serial);
+        self.reactive = Reactive.Reactive(self.serial, self.mapReader);
 
 
         if IPLOT:
@@ -246,20 +246,34 @@ class Robot:
                         
 
                 prevDistToHome = distToHome
+
             self.reactive.act(suggestAction)
             #time.sleep(perceive_speed + extra_sleep)
             mapX, mapY = robotToMap(self.reactive.sensors.x, self.reactive.sensors.y)
             phi = self.reactive.sensors.phi
             map_information = self.mapReader.getNearbyWalls(mapX, mapY, phi)
+
+            robotRadius = 15
+
+            pygame.draw.circle(self.windowSurfaceObj, (51, 102, 0), (mapX, mapY), robotRadius, 0)
             
+            # forward - red
             x, y = map_reader.calcKatets(mapY, mapX, phi, map_information[0])
             pygame.draw.circle(self.windowSurfaceObj, (255,0,0), (y, x), 10, 0)
 
+
+            # left - green
             x, y = map_reader.calcKatets(mapY, mapX, phi+np.pi/2, map_information[1])
             pygame.draw.circle(self.windowSurfaceObj, (0,255,0), (y, x), 10, 0)
 
+
+            # right - blue
             x, y = map_reader.calcKatets(mapY, mapX, phi-np.pi/2, map_information[2])
             pygame.draw.circle(self.windowSurfaceObj, (0,0,255), (y, x), 10, 0)
+            
+            for particle in self.reactive.sensors.particles.particles:
+                x, y = robotToMap(particle.x, particle.y)
+                pygame.draw.circle(self.windowSurfaceObj, (0, 255, 0), (x, y), 5, 1)
     
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())

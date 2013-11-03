@@ -2,12 +2,12 @@ import math
 from math import sqrt
 import particles
 
-PARTICLES_NUM = 1
+PARTICLES_NUM = 100 
 
 class SensorModel:
-    def __init__(self, s):
+    def __init__(self, s, mapReader):
         global PARTICLES_NUM
-        self.particles = particles.Particles(PARTICLES_NUM)
+        self.particles = particles.Particles(PARTICLES_NUM, mapReader)
         self.s = s
         self.array = []
         self.lightarray = []
@@ -31,7 +31,7 @@ class SensorModel:
 
         particles.doPrediction(lDelta, rDelta, self.R)
 
-        particles.doCorrection(self.array)
+        particles.doCorrection(self.getFLRDist())
 
         self.phi, self.x, self.y = particles.getMeanPos()
 
@@ -46,6 +46,8 @@ class SensorModel:
             self.foodX = self.x
             self.foodY = self.y
             self.foodPhi = self.phi
+    def getFLRDist(self):
+        return [self.sensefrontdist(), sensorToCmLeft(self.array[0]), sensorToCmRight(self.array[5])]
 
     def getDistanceFromHome(self):
         return sqrt(self.x**2+self.y**2)

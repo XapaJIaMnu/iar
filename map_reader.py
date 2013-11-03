@@ -13,10 +13,18 @@ for line in map_file:
     linenum = linenum + 1
 
 def calcKatets(x, y, angl, dist):
-    return (x-int(floor(sin(angl)*(41 + dist*15))), y+int(floor(cos(angl)*(41 + dist*15))))
+    return (x-int(floor(sin(angl)*(15 + dist*15))), y+int(floor(cos(angl)*(15 + dist*15))))
 
 
 class Map:
+    def impossible(self, x, y):
+        xx = x
+        row = int(y)
+        column = int(xx)
+        if row >= 533 or column >= 800 or self.map_array[row][column] == 1:
+            return True
+        return False
+
     def __init__(self, map):
         self.map_array = map
 

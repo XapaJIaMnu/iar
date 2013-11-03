@@ -14,9 +14,9 @@ spinCount = 20
 
 class Reactive:
 
-    def __init__(self, serial):
+    def __init__(self, serial, mapReader):
         self.serial = serial
-        self.sensors = sensor_model.SensorModel(self.serial)
+        self.sensors = sensor_model.SensorModel(self.serial, mapReader)
     def act(self, controlSuggests):
         global speed
         global keepdist
