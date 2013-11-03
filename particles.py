@@ -40,13 +40,13 @@ class Particles:
             # TODO check map for probability of current sensor readings
             # ex particle.p = map.getP((particle.x, particle.y, particle.phi), sensors)
             mapX, mapY =  robotToMap(particle.x, particle.y)
-            #if self.mapReader.impossible(mapX, mapY):
-            #    particle.p = 0
-            #else:
-            #    particle.p = getProb(self.mapReader.getNearbyWalls(mapX, mapY, particle.phi), sensorsFrontLeftRightDist)
+            if self.mapReader.impossible(mapX, mapY):
+                particle.p = 0
+            else:
+                particle.p = getProb(self.mapReader.getNearbyWalls(mapX, mapY, particle.phi), sensorsFrontLeftRightDist)
             
             # dummy p
-            particle.p = 1
+            #particle.p = 1
 
             normP = normP + particle.p
 

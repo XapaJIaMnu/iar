@@ -122,6 +122,9 @@ class Robot:
                 pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (mX, mY))
                 prevx, prevy = (mX, mY)
             
+            if self.reactive.sensors.haveFood and GOING_TOWARDS_FOOD:
+                GOING_TOWARDS_FOOD = False
+                TURNING_TOWARDS_HOME = True
 
             if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
@@ -129,12 +132,16 @@ class Robot:
                 #time.sleep(0.1)
                 self.reactive.sensors.updateModel()
                 self.reactive.sensors.updatePos()
+                angleRad = np.radians(robot.reactive.sensors.getAngleFromFood())
                 angle = (180-robot.reactive.sensors.getAngleToFood())%360
                 other_angle = 360-angle
                 #print "Turning towards food angle is " + str(angle) + " other one is " + str(other_angle)
 
-
                 distToFood = self.reactive.sensors.getDistanceFromFood()
+
+                foodPos = robotToMap(self.reactive.sensors.x - distToFood * np.cos(angleRad), self.reactive.sensors.y + distToFood * np.sin(angleRad))
+
+                pygame.draw.circle(self.windowSurfaceObj, (255, 0, 0), foodPos, 20, 0)
 
                 if distToFood < DIST_NEAR and distToFood > prevDistToFood:
                     print "Food!!!"
@@ -191,7 +198,7 @@ class Robot:
 
                 self.reactive.sensors.updateModel()
                 self.reactive.sensors.updatePos()
-                angleRad = np.radians(robot.reactive.sensors.getAngleToHome())
+                angleRad = np.radians(robot.reactive.sensors.getAngleFromHome())
                 angle = (180-robot.reactive.sensors.getAngleToHome())%360
                 other_angle = 360-angle
                 print "Turning towards home angle is " + str(angle) + " other one is " + str(other_angle)
@@ -201,7 +208,7 @@ class Robot:
                 print "DistToHome is ", distToHome
 
 
-                homePos = robotToMap(self.reactive.sensors.x + distToHome * np.cos(angleRad), self.reactive.sensors.y + distToHome * np.sin(angleRad))
+                homePos = robotToMap(self.reactive.sensors.x - distToHome * np.cos(angleRad), self.reactive.sensors.y + distToHome * np.sin(angleRad))
 
                 pygame.draw.circle(self.windowSurfaceObj, (0, 0, 255), homePos, 20, 0)
 
