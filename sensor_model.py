@@ -20,6 +20,8 @@ class SensorModel:
         self.R = 13.1
         self.historyPosX = [0]
         self.historyPosY = [0]
+        self.startX = 500*1.5
+        self.startY = 260*1.5
     
     def resetCounts(self):
         self.s.write('G,0,0\n')
@@ -46,11 +48,12 @@ class SensorModel:
             self.foodX = self.x
             self.foodY = self.y
             self.foodPhi = self.phi
+
     def getFLRDist(self):
         return [self.sensefrontdist(), sensorToCmLeft(self.array[0]), sensorToCmRight(self.array[5])]
 
     def getDistanceFromHome(self):
-        return sqrt(self.x**2+self.y**2)
+        return sqrt((self.x - self.startX)**2+(self.y - self.startY)**2)
 
     def getStartingAngle(self):
         #print "Starting angle is " + str(math.degrees(self.phi))
@@ -62,7 +65,7 @@ class SensorModel:
         if d == 0:
             alpha = 0
         else:
-            alpha = math.acos(self.x/d)
+            alpha = math.acos((self.x-self.startX)/d)
         if self.y > 0:
             alpha = -alpha
         #print "Angle from home is " + str(math.degrees(alpha)%360)

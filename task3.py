@@ -195,6 +195,7 @@ class Robot:
 
 
                 distToHome = self.reactive.sensors.getDistanceFromHome()
+                print "DistToHome is ", distToHome
 
                 if distToHome < DIST_NEAR and distToHome > prevDistToHome:
                     print "Home!!!"
