@@ -9,6 +9,8 @@ import pygame
 from pygame.locals import *
 import sys
 import map_reader
+import numpy as np
+import sensor_model
 
 serial = serial.Serial('/dev/ttyS0', timeout=1)
 
@@ -37,7 +39,6 @@ class Robot:
         self.map = [map(int, line.split()) for line in maplines]
         self.rownum = len(self.map)
         self.colnum = len(self.map[0])
-
 
         pygame.init()        
 
@@ -71,6 +72,8 @@ class Robot:
         prevDistToFood = 100000
         suggestAction = 0
         perceive_speed = DEFAULT_SPEED_ACTIVE
+        startPos = robotToMap(self.reactive.sensors.particles.particles[0].x, self.reactive.sensors.particles.particles[0].y)
+        print "StartPos", str(startPos)
         while(True):
             #self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
             self.windowSurfaceObj.fill((255, 255, 255))
@@ -97,11 +100,13 @@ class Robot:
             if IPLOT:
                 self.ip.update(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY)
 
-            prevx, prevy = (0, 0)
+            prevx, prevy = startPos
             for (x, y) in zip(robot.reactive.sensors.historyPosX, robot.reactive.sensors.historyPosY):
-                pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (x, y))
-                prevx, prevy = (x, y)
+                mX, mY = robotToMap(x, y)
+                pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (mX, mY))
+                prevx, prevy = (mX, mY)
             
+
             if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()
@@ -234,10 +239,24 @@ class Robot:
                 prevDistToHome = distToHome
             self.reactive.act(suggestAction)
             #time.sleep(perceive_speed + extra_sleep)
-            map_information = self.mapReader.getNearbyWalls(self.reactive.sensors.x, self.reactive.sensors.y, self.reactive.sensors.phi)
+            mapX, mapY = robotToMap(self.reactive.sensors.x, self.reactive.sensors.y)
+            phi = self.reactive.sensors.phi
+            map_information = self.mapReader.getNearbyWalls(mapX, mapY, phi)
+            
+            x, y = map_reader.calcKatets(mapY, mapX, phi, map_information[0])
+            pygame.draw.circle(self.windowSurfaceObj, (255,0,0), (y, x), 10, 0)
+
+            x, y = map_reader.calcKatets(mapY, mapX, phi+np.pi/2, map_information[1])
+            pygame.draw.circle(self.windowSurfaceObj, (0,255,0), (y, x), 10, 0)
+
+            x, y = map_reader.calcKatets(mapY, mapX, phi-np.pi/2, map_information[2])
+            pygame.draw.circle(self.windowSurfaceObj, (0,0,255), (y, x), 10, 0)
+    
             print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
             print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
             print "Map array is " + str(map_information)
+
+            print "X and Y are ", self.reactive.sensors.x, self.reactive.sensors.y
      
             #If in initial roaming state, switch to Going_HOME state when we find our food.
             if not TURNING_TOWARDS_HOME and not GOING_TOWARDS_FOOD:
@@ -247,7 +266,7 @@ class Robot:
                     TURNING_TOWARDS_HOME = True
                     perceive_speed = DEFAULT_SPEED_HOME
             pygame.display.update()
-            self.clock.tick(20) # run 20 times per second, roughly 50ms
+            self.clock.tick(30) # run 20 times per second, roughly 50ms
  
     def stop(self):
         self.serial.write('D,0,0\n')
@@ -256,5 +275,14 @@ class Robot:
 def stop():
     serial.write('D,0,0\n')
     serial.readall()
+
+def robotToMap(x, y):
+   return (x/1.5, 533-y/1.5)
+
+def testNearbyWalls(x, y, phi):
+    sensors = robot.reactive.sensors
+    sensors.updateModel()
+    print str((sensors.sensefrontdist(), sensor_model.sensorToCm(sensors.array[0]), sensor_model.sensorToCm(sensors.array[5])))
+    print robot.mapReader.getNearbyWalls(x, y, phi)
 
 robot = Robot()

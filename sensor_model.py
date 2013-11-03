@@ -217,20 +217,10 @@ class SensorModel:
         val = min(self.array)
         ind = self.array.index(val)
         return (val, ind)
-
     def senseleftdist(self):
         sensorvalue = self.senseleft()
-        toret = 5
-        if sensorvalue <= 120:
-            toret = 5
-        elif sensorvalue < 140:
-            toret = 4
-        elif sensorvalue < 180:
-            toret = 3
-        elif sensorvalue < 300:
-            toret = 2
-        else:
-            toret = 1
+
+        toret = sensorToCm(sensorvalue)
 
         print "senseleftdist " + str(toret)
 
@@ -238,17 +228,8 @@ class SensorModel:
 
     def senserightdist(self):
         sensorvalue = self.senseright()
-        toret = 5
-        if sensorvalue <= 120:
-            toret = 5
-        elif sensorvalue < 140:
-            toret = 4
-        elif sensorvalue < 180:
-            toret = 3
-        elif sensorvalue < 300:
-            toret = 2
-        else:
-            toret = 1
+
+        toret = sensorToCm(sensorvalue)
 
         print "senserightdist " + str(toret)
 
@@ -258,20 +239,24 @@ class SensorModel:
 
     def sensefrontdist(self):
         sensorvalue = self.sensefront()
-        toret = 5
-        if sensorvalue <= 120:
-            toret = 5
-        elif sensorvalue < 140:
-            toret = 4
-        elif sensorvalue < 180:
-            toret = 3
-        elif sensorvalue < 300:
-            toret = 2
-        else:
-            toret = 1
+
+        toret = sensorToCm(sensorvalue)
 
         print "sensefrontdist " + str(toret)
 
         return toret
+
+def sensorToCm(sensorvalue):
+    if sensorvalue <= 120:
+        toret = 5
+    elif sensorvalue < 140:
+        toret = 4
+    elif sensorvalue < 180:
+        toret = 3
+    elif sensorvalue < 300:
+        toret = 2
+    else:
+        toret = 1
+    return toret
 
 

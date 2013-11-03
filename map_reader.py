@@ -1,4 +1,5 @@
 from math import floor, cos, sin
+import numpy as np
 
 map_file = open("map.txt", 'r')
 
@@ -10,6 +11,10 @@ for line in map_file:
     processed_line = [int(x) for x in processed_line]
     map_array[linenum] = processed_line
     linenum = linenum + 1
+
+def calcKatets(x, y, angl, dist):
+    return (x-int(floor(sin(angl)*(41 + dist*15))), y+int(floor(cos(angl)*(41 + dist*15))))
+
 
 class Map:
     def __init__(self, map):
@@ -23,59 +28,108 @@ class Map:
         #map - 5 px = 1sm
         #robot diametur 5.5 sm., so we need 2.75*5 = 14 px radius
         ret_array = [] # [front, left, right
-        
 
-        #See if we have wall 1,2,3,4,5 sm in front of us
-        for i in range(1,6):
-            katety = int(floor(cos(phi)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
-            katetx = int(floor(sin(phi)/14 + i*5))
-            if katetx+x > 799 or katety+y > 532:
-                ret_array.append(i)
-                break;
+        found = False
+        for i in range(1, 6):
+            krow, kcol = calcKatets(x, y, phi, i)
+            if krow >= 533 or kcol >= 800:
+                ret_array.append(1)
+                found = True
+                break
+            if (map_array[krow][kcol] == 1):
+               ret_array.append(i)
+               found = True
+               break 
+        if not found:
+            ret_array.append(5)
 
-            print katetx + x
-            print katety + y
-            if (map_array[katetx + x][katety + y] == 1):
-                ret_array.append(i)
-                break;
-            else:
-                if (i == 5):
-                    #We haven't found a wall, return 0
-                    ret_array.append(0)
+        found = False
+        for i in range(1, 6):
+            krow, kcol = calcKatets(x, y, phi+np.pi/2, i)
+            if krow >= 533 or kcol >= 800:
+                ret_array.append(1)
+                found = True
+                break
+            if (map_array[krow][kcol] == 1):
+               ret_array.append(i)
+               found = True
+               break 
+        if not found:
+            ret_array.append(5)
 
-        #See if we have wall 1,2,3,4,5 sm right of us
-        for i in range(1,6):
-            katety = int(floor(cos(phi-90)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
-            katetx = int(floor(sin(phi-90)/14 + i*5))
-            if katetx+x > 799 or katety+y > 532:
-                ret_array.append(i)
-                break;
-
-            if (map_array[katetx + x][katety + y] == 1):
-                ret_array.append(i)
-                break;
-            else:
-                if (i == 5):
-                    #We haven't found a wall, return 0
-                    ret_array.append(0)
-
-        #See if we have wall 1,2,3,4,5 sm left of us
-        for i in range(1,6):
-            katety = int(floor(cos(phi-90)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
-            katetx = int(floor(sin(phi-90)/14 + i*5))
-            if katetx+x > 799 or katety+y > 532:
-                ret_array.append(i)
-                break;
-
-            if (map_array[katetx + x][katety + y] == 1):
-                ret_array.append(i)
-                break;
-            else:
-                if (i == 5):
-                    #We haven't found a wall, return 0
-                    ret_array.append(0)
+        found = False
+        for i in range(1, 6):
+            krow, kcol = calcKatets(x, y, phi-np.pi/2, i)
+            if krow >= 533 or kcol >= 800:
+                ret_array.append(1)
+                found = True
+                break
+            if (map_array[krow][kcol] == 1):
+               ret_array.append(i)
+               found = True
+               break 
+        if not found:
+            ret_array.append(5)
 
         return ret_array
+        #See if we have wall 1,2,3,4,5 sm in front of us
+        #for i in range(1,6):
+        #    katety = int(floor(cos(phi)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
+        #    katetx = int(floor(sin(phi)/14 + i*5))
+        #    if katetx+x > 799 or katety+y > 532:
+        #        ret_array.append(i)
+        #        break;
+
+        #    print katetx + x
+        #    print katety + y
+        #    if (map_array[katetx + x][katety + y] == 1):
+        #        ret_array.append(i)
+        #        break;
+        #    else:
+        #        if (i == 5):
+        #            #We haven't found a wall, return 0
+        #            ret_array.append(0)
+ 
+        #angl = phi+np.pi/2
+        #self.mKatetsRight = calcKatets(x, y, angl, 6)
+
+        ##See if we have wall 1,2,3,4,5 sm right of us
+        #for i in range(1,6):
+        #    katety = int(floor(cos(phi-np.pi)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
+        #    katetx = int(floor(sin(phi-np.pi)/14 + i*5))
+        #    if katetx+x > 799 or katety+y > 532:
+        #        ret_array.append(i)
+        #        break;
+
+        #    if (map_array[katetx + x][katety + y] == 1):
+        #        ret_array.append(i)
+        #        break;
+        #    else:
+        #        if (i == 5):
+        #            #We haven't found a wall, return 0
+        #            ret_array.append(0)
+ 
+        #angl = phi-np.pi/2
+
+        #self.mKatetsLeft = calcKatets(x, y, angl, 6)
+
+        ##See if we have wall 1,2,3,4,5 sm left of us
+        #for i in range(1,6):
+        #    katety = int(floor(cos(phi+np.pi)/14 + i*5)) #14 pixels robot size + 55 pixels ahead of it 
+        #    katetx = int(floor(sin(phi+np.pi)/14 + i*5))
+        #    if katetx+x > 799 or katety+y > 532:
+        #        ret_array.append(i)
+        #        break;
+
+        #    if (map_array[katetx + x][katety + y] == 1):
+        #        ret_array.append(i)
+        #        break;
+        #    else:
+        #        if (i == 5):
+        #            #We haven't found a wall, return 0
+        #            ret_array.append(0)
+
+        #return ret_array
 
 
 
