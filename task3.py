@@ -69,6 +69,7 @@ class Robot:
         global EXPLORE_FOR
         global GOING_TOWARDS_FOOD
         global LOCALIZATION_CALIBRATION_MODE
+        
 
         self.starttime = time.time()
         prevDistToHome = 100000
@@ -76,8 +77,18 @@ class Robot:
         suggestAction = 0
         perceive_speed = DEFAULT_SPEED_ACTIVE
         startPos = robotToMap(self.reactive.sensors.particles.particles[0].x, self.reactive.sensors.particles.particles[0].y)
-        print "StartPos", str(startPos)
+        #print "StartPos", str(startPos)
+
+        arenaSurfaceObj = pygame.Surface((800, 533))
+        arenaSurfaceObj.fill((255, 255, 255))
+
+        for (row, y) in zip(self.map, range(self.rownum)):
+            for (col, x) in zip(row, range(self.colnum)):
+                if col == 1:
+                   pygame.draw.circle(arenaSurfaceObj, (0, 0, 0), (x, y), 20, 0)
+
         while(True):
+            print time.time()
             #self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
             self.windowSurfaceObj.fill((255, 255, 255))
             for event in pygame.event.get():
@@ -92,18 +103,14 @@ class Robot:
                 elif event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         pygame.event.post(pygame.event.Event(QUIT))
-
-            for (row, y) in zip(self.map, range(self.rownum)):
-                for (col, x) in zip(row, range(self.colnum)):
-                    if col == 1:
-                       pygame.draw.circle(self.windowSurfaceObj, (0, 0, 0), (x, y), 20, 0)
+            self.windowSurfaceObj.blit(arenaSurfaceObj, (0,0))
 
             if LOCALIZATION_CALIBRATION_MODE:
                 pygame.display.update()
                 self.clock.tick(2) # run 20 times per second, roughly 50ms
                 continue
-            print
-            print
+            #print
+            #print
             extra_sleep = 0
             self.reactive.sensors.updateModel()
             if IPLOT:
@@ -124,7 +131,7 @@ class Robot:
                 self.reactive.sensors.updatePos()
                 angle = (180-robot.reactive.sensors.getAngleToFood())%360
                 other_angle = 360-angle
-                print "Turning towards food angle is " + str(angle) + " other one is " + str(other_angle)
+                #print "Turning towards food angle is " + str(angle) + " other one is " + str(other_angle)
 
 
                 distToFood = self.reactive.sensors.getDistanceFromFood()
@@ -275,11 +282,11 @@ class Robot:
                 x, y = robotToMap(particle.x, particle.y)
                 pygame.draw.circle(self.windowSurfaceObj, (0, 255, 0), (x, y), 5, 1)
     
-            print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
-            print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
-            print "Map array is " + str(map_information)
+            #print "Distance from home " + str(self.reactive.sensors.getDistanceFromHome())
+            #print "Angle from home " + str(self.reactive.sensors.getAngleFromHome())
+            #print "Map array is " + str(map_information)
 
-            print "X and Y are ", self.reactive.sensors.x, self.reactive.sensors.y
+            #print "X and Y are ", self.reactive.sensors.x, self.reactive.sensors.y
      
             #If in initial roaming state, switch to Going_HOME state when we find our food.
             if not TURNING_TOWARDS_HOME and not GOING_TOWARDS_FOOD:

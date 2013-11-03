@@ -64,7 +64,7 @@ class Reactive:
                 followWallOnLeft = False
                 turnUntilNear = True
         elif roam and controlSuggests == 0:
-            print "Roaming!"
+            #print "Roaming!"
             self.moveahead(speed) 
         else:
             if controlSuggests != 0:
@@ -200,27 +200,27 @@ class Reactive:
         self.moveahead(0)
 
     def moveLeft(self, value):
-        print "moveLeft"
+        #print "moveLeft"
         self.serial.write('D,0,' + str(value) +' \n')
         self.serial.readline()
         self.sensors.updatePos()
 
     def moveRight(self, value):
-        print "moveRight"
+        #print "moveRight"
         self.serial.write('D,' + str(value) + ',0\n')
         self.serial.readline()
         self.sensors.updatePos()
 
 
     def turnLeft(self, value):
-        print "turnLeft"
+        #print "turnLeft"
         self.serial.write('D,' + str(-value) + ',' + str(value) + '\n')
         self.serial.readline()
         self.sensors.updatePos()
 
 
     def turnRight(self, value):
-        print "turnRight"
+        #print "turnRight"
         self.serial.write('D,' + str(value) + ',' + str(-value) + '\n')
         self.serial.readline()
         self.sensors.updatePos()

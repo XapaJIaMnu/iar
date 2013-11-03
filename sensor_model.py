@@ -2,7 +2,7 @@ import math
 from math import sqrt
 import particles
 
-PARTICLES_NUM = 100 
+PARTICLES_NUM = 1 
 
 class SensorModel:
     def __init__(self, s, mapReader):
@@ -37,7 +37,7 @@ class SensorModel:
 
         self.historyPosX += [self.x]
         self.historyPosY += [self.y]
-        print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y)
+        #print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y)
 
         #After updating position we should check for food
         if self.isFood():
@@ -53,8 +53,8 @@ class SensorModel:
         return sqrt(self.x**2+self.y**2)
 
     def getStartingAngle(self):
-        print "Starting angle is " + str(math.degrees(self.phi))
-        print "Starting angle is " + str(math.degrees(self.phi)%360)
+        #print "Starting angle is " + str(math.degrees(self.phi))
+        #print "Starting angle is " + str(math.degrees(self.phi)%360)
         return math.degrees(self.phi)%360
 
     def getAngleFromHome(self):
@@ -65,7 +65,7 @@ class SensorModel:
             alpha = math.acos(self.x/d)
         if self.y > 0:
             alpha = -alpha
-        print "Angle from home is " + str(math.degrees(alpha)%360)
+        #print "Angle from home is " + str(math.degrees(alpha)%360)
         return math.degrees(alpha)%360
 
     def getAngleToHome(self):
@@ -76,8 +76,8 @@ class SensorModel:
         return sqrt((self.x - self.foodX)**2+(self.y - self.foodY)**2)
 
     def getFoodStartingAngle(self):
-        print "Starting food angle is " + str(math.degrees(self.foodPhi))
-        print "Starting food angle is " + str(math.degrees(self.foodPhi)%360)
+        #print "Starting food angle is " + str(math.degrees(self.foodPhi))
+        #print "Starting food angle is " + str(math.degrees(self.foodPhi)%360)
         return math.degrees(self.phi - self.foodPhi)%360
 
     def getAngleFromFood(self):
@@ -88,7 +88,7 @@ class SensorModel:
             alpha = math.acos((self.x-self.foodX)/d)
         if self.y > 0:
             alpha = -alpha
-        print "Angle from food is " + str(math.degrees(alpha)%360)
+        #print "Angle from food is " + str(math.degrees(alpha)%360)
         return math.degrees(alpha)%360
 
     def getAngleToFood(self):
@@ -101,9 +101,9 @@ class SensorModel:
 
         motorLeftPos, motorRightPos = map(int, st[2:].split(','))
 
-        print "prevMotorPos" + str(self.prevMotorLeftPos2) + " " + \
-                str(self.prevMotorRightPos2)        
-        print "motorPos " + str(motorLeftPos) + " " + str(motorRightPos)
+        #print "prevMotorPos" + str(self.prevMotorLeftPos2) + " " + \
+                #str(self.prevMotorRightPos2)        
+        #print "motorPos " + str(motorLeftPos) + " " + str(motorRightPos)
 
         offsetL = motorLeftPos - self.prevMotorLeftPos2
         offsetR = motorRightPos - self.prevMotorRightPos2
@@ -111,7 +111,7 @@ class SensorModel:
         self.prevMotorLeftPos2 = motorLeftPos
         self.prevMotorRightPos2 = motorRightPos
 
-        print "offsets " + str(offsetL) + " " + str(offsetR)
+        #nprint "offsets " + str(offsetL) + " " + str(offsetR)
         return (offsetL*0.08, offsetR*0.08)
 
     def calcDist(self):
@@ -121,14 +121,14 @@ class SensorModel:
 
         motorLeftPos, motorRightPos = map(int, st[2:].split(','))
 
-        print "prevMotorPos" + str(self.prevMotorLeftPos) + " " + \
-                str(self.prevMotorRightPos)        
-        print "motorPos " + str(motorLeftPos) + " " + str(motorRightPos)
+        #print "prevMotorPos" + str(self.prevMotorLeftPos) + " " + \
+                #str(self.prevMotorRightPos)        
+        #print "motorPos " + str(motorLeftPos) + " " + str(motorRightPos)
 
         speed = sqrt((motorLeftPos - self.prevMotorLeftPos)**2
                         + (motorRightPos - self.prevMotorRightPos)**2)
 
-        print "speed " + str(speed)
+        #print "speed " + str(speed)
 
 
         self.prevMotorLeftPos = motorLeftPos
@@ -150,7 +150,7 @@ class SensorModel:
         #Read proximity sensors
         self.s.write('N\n')
         line = self.s.readline()
-        print line
+        #print line
         if line == "":
             return
         try:
@@ -174,7 +174,7 @@ class SensorModel:
         #Read light sensors
         self.s.write('O\n')
         lightline = self.s.readline()
-        print "Light sensors: " + str(lightline)
+        #print "Light sensors: " + str(lightline)
 
         try:
             array = map(int, lightline[2:].split(','))
@@ -224,7 +224,7 @@ class SensorModel:
 
         toret = sensorToCmLeft(sensorvalue)
 
-        print "senseleftdist " + str(toret)
+        #print "senseleftdist " + str(toret)
 
         return toret
 
@@ -233,7 +233,7 @@ class SensorModel:
 
         toret = sensorToCmRight(sensorvalue)
 
-        print "senserightdist " + str(toret)
+        #print "senserightdist " + str(toret)
 
         return toret
 
@@ -244,7 +244,7 @@ class SensorModel:
 
         toret = sensorToCmFront(sensorvalue)
 
-        print "sensefrontdist " + str(toret)
+        #print "sensefrontdist " + str(toret)
 
         return toret
 
