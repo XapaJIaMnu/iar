@@ -188,6 +188,9 @@ class Robot:
                         GOING_TOWARDS_FOOD = False
 
                 if  angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
+                    #Don't block if we can't find food
+                    if foodIterations > 0:
+                        foodIterations = foodIterations + 1
                     if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:
                         turnSpeed = 1
                     elif angle < ANGLE_CAREFUL_THRESH or other_angle < ANGLE_CAREFUL_THRESH:
