@@ -161,7 +161,7 @@ class Robot:
                     elif angle < ANGLE_CAREFUL_THRESH or other_angle < ANGLE_CAREFUL_THRESH:
                         turnSpeed = 2
                     else:
-                        turnSpeed = -1
+                        turnSpeed = 5 
                     if angle > 180:
                         print "Suggesting left for food"
                         suggestAction = ("turnRight", turnSpeed)
@@ -233,7 +233,7 @@ class Robot:
                     elif angle < ANGLE_CAREFUL_THRESH or other_angle < ANGLE_CAREFUL_THRESH:
                         turnSpeed = 2
                     else:
-                        turnSpeed = -1
+                        turnSpeed = 5 
                     if angle > 180:
                         print "Suggesting left"
                         suggestAction = ("turnRight", turnSpeed)

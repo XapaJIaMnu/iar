@@ -12,8 +12,10 @@ for line in map_file:
     map_array[linenum] = processed_line
     linenum = linenum + 1
 
+distjumpX = 10 
+distjumpY = 10 
 def calcKatets(x, y, angl, dist):
-    return (x-int(floor(sin(angl)*(15 + dist*15))), y+int(floor(cos(angl)*(15 + dist*15))))
+    return (x-int(floor(sin(angl)*(15 + dist*distjumpX))), y+int(floor(cos(angl)*(15 + dist*distjumpY))))
 
 
 class Map:
@@ -41,8 +43,8 @@ class Map:
         found = False
         for i in range(1, 6):
             krow, kcol = calcKatets(x, y, phi, i)
-            if krow >= 533 or kcol >= 800:
-                ret_array.append(1)
+            if krow < 0 or kcol < 0 or krow >= 533 or kcol >= 800:
+                ret_array.append(i)
                 found = True
                 break
             if (map_array[krow][kcol] == 1):
@@ -56,8 +58,8 @@ class Map:
         found = False
         for i in range(1, 6):
             krow, kcol = calcKatets(x, y, phi+np.pi/2, i)
-            if krow >= 533 or kcol >= 800:
-                ret_array.append(1)
+            if krow < 0 or kcol < 0 or krow >= 533 or kcol >= 800:
+                ret_array.append(i)
                 found = True
                 break
             if (map_array[krow][kcol] == 1):
@@ -71,8 +73,8 @@ class Map:
         found = False
         for i in range(1, 6):
             krow, kcol = calcKatets(x, y, phi-np.pi/2, i)
-            if krow >= 533 or kcol >= 800:
-                ret_array.append(1)
+            if krow < 0 or kcol < 0 or krow >= 533 or kcol >= 800:
+                ret_array.append(i)
                 found = True
                 break
             if (map_array[krow][kcol] == 1):

@@ -4,22 +4,27 @@ import numpy as np
 SCALE = 0.03 
 
 class Particle:
-    def __init__(self, particle=None):
+    def __init__(self, particle=None, starting=False):
         if particle != None:
             self.phi = particle.phi
             self.x = particle.x
             self.y = particle.y
-        else:
-            self.phi = self.x = self.y = self.p = 0
+        elif starting:
             self.x = 500*1.5
             self.y = 260*1.5
+            self.phi = 0
+        else:
+            self.phi = self.x = self.y = self.p = 0
+            self.x = np.random.randint(800*1.5)
+            self.y = np.random.randint(533*1.5)
+            self.phi = np.random.random()*2*np.pi
 
 
 class Particles:
     def __init__(self, number, mapReader):
         self.mapReader = mapReader
         self.num = number
-        self.particles = [Particle() for _ in range(number)]
+        self.particles = [Particle(starting=True) for _ in range(number)]
 
     def doPrediction(self, lDelta, rDelta, R):
         global SCALE
@@ -30,6 +35,9 @@ class Particles:
             particle.phi = particle.phi - 0.5*(lDelta - rDelta)/(2*R)
             # add gaussian noise with standard diviation SCALE
             particle.phi += np.random.normal(scale=SCALE)
+            particle.prevx = particle.x
+            particle.phi += np.random.normal(scale=SCALE)
+            particle.prevy = particle.y
             particle.x = particle.x + 0.5*(lDelta + rDelta)*math.cos(particle.phi)
             particle.y = particle.y + 0.5*(lDelta + rDelta)*math.sin(particle.phi)
 
@@ -40,10 +48,13 @@ class Particles:
             # TODO check map for probability of current sensor readings
             # ex particle.p = map.getP((particle.x, particle.y, particle.phi), sensors)
             mapX, mapY =  robotToMap(particle.x, particle.y)
-            if self.mapReader.impossible(mapX, mapY):
-                particle.p = 0
-            else:
-                particle.p = getProb(self.mapReader.getNearbyWalls(mapX, mapY, particle.phi), sensorsFrontLeftRightDist)
+            while self.mapReader.impossible(mapX, mapY):
+                print "Impossible particle!"
+                newParticle = Particle()
+                particle.x, particle.y, particle.phi = newParticle.x, newParticle.y, newParticle.phi
+                mapX, mapY =  robotToMap(particle.x, particle.y)
+                
+            particle.p = getProb(self.mapReader.getNearbyWalls(mapX, mapY, particle.phi), sensorsFrontLeftRightDist)
             
             # dummy p
             #particle.p = 1
@@ -57,11 +68,6 @@ class Particles:
         newParticles = []
         self.particlesX = []
         self.particlesY = []
-
-        if normP == 0:
-            # all the particle positions are impossible
-            self.particles = self.prevParticles
-            return
 
         for prob in sample:
             accumProb = 0

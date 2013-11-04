@@ -2,7 +2,7 @@ import math
 from math import sqrt
 import particles
 
-PARTICLES_NUM = 100 
+PARTICLES_NUM = 200 
 
 class SensorModel:
     def __init__(self, s, mapReader):
@@ -85,12 +85,13 @@ class SensorModel:
         return math.degrees(self.phi - self.foodPhi)%360
 
     def getAngleFromFood(self):
+        
         d = self.getDistanceFromFood()
         if d == 0:
             alpha = 0
         else:
-            alpha = math.acos((self.x-self.foodX)/d)
-        if self.y - self.foodY > 0: #self.y - self.startY > 0:
+            alpha = math.acos((self.x - self.foodX - self.startX)/d)
+        if self.y - self.foodY - self.startY > 0: #self.y - self.startY > 0:
             alpha = -alpha
         #print "Angle from food is " + str(math.degrees(alpha)%360)
         return math.degrees(alpha)%360
