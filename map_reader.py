@@ -57,7 +57,7 @@ class Map:
         # left
         found = False
         for i in range(1, 6):
-            krow, kcol = calcKatets(x, y, phi+np.pi/2, i)
+            krow, kcol = calcKatets(x, y, phi+5*np.pi/12, i)
             if krow < 0 or kcol < 0 or krow >= 533 or kcol >= 800:
                 ret_array.append(i)
                 found = True
@@ -72,7 +72,7 @@ class Map:
         # right
         found = False
         for i in range(1, 6):
-            krow, kcol = calcKatets(x, y, phi-np.pi/2, i)
+            krow, kcol = calcKatets(x, y, phi-5*np.pi/12, i)
             if krow < 0 or kcol < 0 or krow >= 533 or kcol >= 800:
                 ret_array.append(i)
                 found = True
