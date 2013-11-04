@@ -90,9 +90,9 @@ class SensorModel:
         if d == 0:
             alpha = 0
         else:
-            alpha = math.acos((self.x - self.foodX - self.startX)/d)
-        if self.y - self.foodY - self.startY > 0: #self.y - self.startY > 0:
-            alpha = -alpha
+            alpha = math.acos((self.foodX-self.x)/d)
+        #if self.foodY - self.y > 0: #self.y - self.startY > 0:
+        #    alpha = -alpha
         #print "Angle from food is " + str(math.degrees(alpha)%360)
         return math.degrees(alpha)%360
 
