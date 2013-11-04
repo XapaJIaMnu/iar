@@ -114,12 +114,12 @@ class Robot:
 
 
                     # left - green
-                    x, y = map_reader.calcKatets(mapY, mapX, phi+np.pi/2, map_information[1])
+                    x, y = map_reader.calcKatets(mapY, mapX, phi+5*np.pi/12, map_information[1])
                     pygame.draw.circle(self.windowSurfaceObj, (0,255,0), (y, x), 10, 0)
 
 
                     # right - blue
-                    x, y = map_reader.calcKatets(mapY, mapX, phi-np.pi/2, map_information[2])
+                    x, y = map_reader.calcKatets(mapY, mapX, phi-5*np.pi/12, map_information[2])
                     pygame.draw.circle(self.windowSurfaceObj, (0,0,255), (y, x), 10, 0)
        
                 elif event.type == KEYDOWN:
