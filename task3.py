@@ -75,6 +75,7 @@ class Robot:
         prevDistToHome = 100000
         prevDistToFood = 100000
         suggestAction = 0
+        foodIterations = 0 #How many iterations waiting for food to be picked up should we wait.
         perceive_speed = DEFAULT_SPEED_ACTIVE
         startPos = robotToMap(self.reactive.sensors.particles.particles[0].x, self.reactive.sensors.particles.particles[0].y)
         #print "StartPos", str(startPos)
@@ -169,11 +170,18 @@ class Robot:
 
                 if distToFood < DIST_NEAR and distToFood > prevDistToFood:
                     print "Food!!!"
-                    self.serial.write('D,0,0\n')
-                    self.serial.readline()
+                    #See how many iterations in the food state we have been. If they are more
+                    #than 30, assume we've missed the food and go back to roam
+                    foodIterations = foodIterations + 1
+                    if foodIterations > 30:
+                        GOING_TOWARDS_FOOD = False
+                        TURNING_TOWARDS_HOME = False
+                        foodIterations = 0
+                        suggestAction = 0
                     if self.reactive.sensors.haveFood == True:
                         print "Food!!!"
-                        self.reactive.sensors.haveFood = False
+                        foodIterations = 0
+                        #self.reactive.sensors.haveFood = False
                         self.serial.write('D,0,0\n')
                         self.serial.readline()
                         TURNING_TOWARDS_HOME = True
@@ -204,9 +212,18 @@ class Robot:
                         extra_sleep += 0.1
                     else:
                         #Detect that we have picked up the food here.
+                        #See how many iterations in the food state we have been. If they are more
+                        #than 30, assume we've missed the food and go back to roam
+                        foodIterations = foodIterations + 1
+                        if foodIterations > 30:
+                            GOING_TOWARDS_FOOD = False
+                            TURNING_TOWARDS_HOME = False
+                            foodIterations = 0
+                            suggestAction = 0
                         if self.reactive.sensors.haveFood == True:
                             print "Food!!!"
-                            self.reactive.sensors.haveFood = False
+                            foodIterations = 0
+                            #self.reactive.sensors.haveFood = False
                             self.serial.write('D,0,0\n')
                             self.serial.readline()
                             TURNING_TOWARDS_HOME = True
