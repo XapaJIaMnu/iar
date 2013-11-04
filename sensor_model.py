@@ -38,15 +38,6 @@ class SensorModel:
         if not ok:
             return
 
-        particles.doPrediction(lDelta, rDelta, self.R)
-
-        particles.doCorrection(self.getFLRDist())
-
-        self.phi, self.x, self.y = particles.getMeanPos()
-
-        self.historyPosX += [self.x]
-        self.historyPosY += [self.y]
-        #print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y)
 
         #After updating position we should check for food
         if self.isFood():
@@ -56,6 +47,14 @@ class SensorModel:
             self.foodY = self.y
             self.foodPhi = self.phi
 
+
+        else:        
+            particles.doPrediction(lDelta, rDelta, self.R)
+            particles.doCorrection(self.getFLRDist())
+            self.phi, self.x, self.y = particles.getMeanPos()
+            self.historyPosX += [self.x]
+            self.historyPosY += [self.y]
+        #print "updatePos " + str(self.phi) + " " + str(self.x) + " " + str(self.y)
     def getFLRDist(self):
         return [self.sensefrontdist(), sensorToCmLeft(self.array[0]), sensorToCmRight(self.array[5])]
 

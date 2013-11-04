@@ -23,7 +23,7 @@ ANGLE_THRESH = 3
 ANGLE_PRECISE_THRESH = 20
 ANGLE_CAREFUL_THRESH = 10
 DIST_THRESH = 8
-DIST_NEAR = 60
+DIST_NEAR = 20
 DEFAULT_SPEED_ACTIVE = 0.05
 DEFAULT_SPEED_HOME = 0.05
 EXPLORE_FOR = 30
@@ -69,7 +69,8 @@ class Robot:
         global EXPLORE_FOR
         global GOING_TOWARDS_FOOD
         global LOCALIZATION_CALIBRATION_MODE
-        
+
+        CHECKING_HOME = True
 
         self.starttime = time.time()
         prevDistToHome = 100000
@@ -147,11 +148,60 @@ class Robot:
                 pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (mX, mY))
                 prevx, prevy = (mX, mY)
             
-            if self.reactive.sensors.haveFood and GOING_TOWARDS_FOOD:
+            if CHECKING_HOME:
+                self.reactive.sensors.updateModel()
+                self.reactive.sensors.updatePos()
+                angle = (180-robot.reactive.sensors.getAngleFromHome())%360
+                other_angle = 360-angle
+                if self.reactive.sensors.sensefront() < 2:
+                    if TOUCHED_BACK:
+                        CHECKED_HOME = True
+                        TURNING_TOWARDS_HOME = True 
+                        continue
+                    TOUCHED_BACK = True
+                    angle = -angle
+                #print "Turning towards food angle is " + str(angle) + " other one is " + str(other_angle)
+
+                distToFood = self.reactive.sensors.getDistanceFromFood()
+
+                if angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
+                if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:
+                    turnSpeed = 1
+                elif angle < ANGLE_CAREFUL_THRESH or other_angle < ANGLE_CAREFUL_THRESH:
+                    turnSpeed = 2
+                else:
+                    turnSpeed = 5 
+                if angle > 180:
+                    print "Suggesting left"
+                    suggestAction = ("turnRight", turnSpeed)
+                else:
+                    print "Suggesting right"
+                    suggestAction = ("turnLeft", turnSpeed)
+                
+                if distToHome > DIST_THRESH:
+                    if distToHome < DIST_NEAR:
+                        speed = 2
+                    else:
+                        speed = 5
+                    suggestAction = ("goStraight", speed)
+                    extra_sleep += 0.1
+                else:
+                    print "Home!!!"
+                    self.serial.write('D,0,0\n')
+                    self.serial.readline()
+                    #Flash LED lights here.
+                    #Change state 6 times which equals to flashing three times
+                    for i in range(6):
+                        time.sleep(0.3)
+                        self.serial.write('L,1,2\n')
+                        self.serial.readline()
+                        self.serial.write('L,0,2\n')
+            
+            elif self.reactive.sensors.haveFood and GOING_TOWARDS_FOOD:
                 GOING_TOWARDS_FOOD = False
                 TURNING_TOWARDS_HOME = True
 
-            if GOING_TOWARDS_FOOD:
+            elif GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()
                 #time.sleep(0.1)
@@ -234,7 +284,7 @@ class Robot:
 
                 prevDistToFood = distToFood
 
-            if TURNING_TOWARDS_HOME:
+            elif TURNING_TOWARDS_HOME:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()
                 #time.sleep(0.1)
@@ -257,19 +307,23 @@ class Robot:
                 pygame.draw.circle(self.windowSurfaceObj, (0, 0, 255), homePos, 20, 0)
 
                 if distToHome < DIST_NEAR and distToHome > prevDistToHome:
-                    print "Home!!!"
-                    self.serial.write('D,0,0\n')
-                    self.serial.readline()
-                    for i in range(6):
-                        time.sleep(0.3)
-                        self.serial.write('L,1,2\n')
+                    if not CHECKED_HOME:
+                        CHECKING_HOME = True 
+                    else:
+                        CHECKED_HOME = False
+                        print "Home!!!"
+                        self.serial.write('D,0,0\n')
                         self.serial.readline()
-                        self.serial.write('L,0,2\n')
-                        self.serial.readline()
-                    #Drop off any food that we might have
-                    self.reactive.sensors.haveFood = False
-                    TURNING_TOWARDS_HOME = False
-                    GOING_TOWARDS_FOOD = True
+                        for i in range(6):
+                            time.sleep(0.3)
+                            self.serial.write('L,1,2\n')
+                            self.serial.readline()
+                            self.serial.write('L,0,2\n')
+                            self.serial.readline()
+                        #Drop off any food that we might have
+                        self.reactive.sensors.haveFood = False
+                        TURNING_TOWARDS_HOME = False
+                        GOING_TOWARDS_FOOD = True
 
                 if  angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
                     if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:
@@ -310,8 +364,6 @@ class Robot:
                         self.reactive.sensors.haveFood = False
                         TURNING_TOWARDS_HOME = False
                         GOING_TOWARDS_FOOD = True
-                        
-
                 prevDistToHome = distToHome
 
             self.reactive.act(suggestAction)
