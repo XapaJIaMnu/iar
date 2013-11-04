@@ -29,7 +29,14 @@ class SensorModel:
 
     def updatePos(self):
         particles = self.particles
-        (lDelta, rDelta) = self.calcOffsets()
+
+        try:
+            (lDelta, rDelta) = self.calcOffsets()
+            ok = True
+        except:
+            self.updatePos()
+        if not ok:
+            return
 
         particles.doPrediction(lDelta, rDelta, self.R)
 
