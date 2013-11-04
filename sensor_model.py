@@ -261,11 +261,11 @@ class SensorModel:
         return toret
 
 def sensorToCmLeft(sensorvalue):
-    if sensorvalue <= 120:
+    if sensorvalue <= 160:
         toret = 5
-    elif sensorvalue < 160:
+    elif sensorvalue < 200:
         toret = 4
-    elif sensorvalue < 210:
+    elif sensorvalue < 250:
         toret = 3
     elif sensorvalue < 310:
         toret = 2
@@ -274,11 +274,11 @@ def sensorToCmLeft(sensorvalue):
     return toret
 
 def sensorToCmRight(sensorvalue):
-    if sensorvalue <= 120:
+    if sensorvalue <= 160:
         toret = 5
-    elif sensorvalue < 160:
+    elif sensorvalue < 200:
         toret = 4
-    elif sensorvalue < 210:
+    elif sensorvalue < 250:
         toret = 3
     elif sensorvalue < 310:
         toret = 2
@@ -288,13 +288,13 @@ def sensorToCmRight(sensorvalue):
 
 
 def sensorToCmFront(sensorvalue):
-    if sensorvalue <= 120:
+    if sensorvalue <= 130:
         toret = 5
-    elif sensorvalue < 140:
+    elif sensorvalue < 150:
         toret = 4
-    elif sensorvalue < 180:
+    elif sensorvalue < 200:
         toret = 3
-    elif sensorvalue < 300:
+    elif sensorvalue < 320:
         toret = 2
     else:
         toret = 1

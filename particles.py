@@ -37,10 +37,10 @@ class Particles:
             # add gaussian noise with standard diviation SCALE
             particle.phi += np.random.normal(scale=SCALE)
             
-            if np.random.random() > 0.3:
+            if np.random.random() > 0.1:
                 particle.prevx = particle.x
                 particle.x = particle.x + 0.5*(lDelta + rDelta)*math.cos(particle.phi)
-            if np.random.random() > 0.3:
+            if np.random.random() > 0.1:
                 particle.prevy = particle.y
                 particle.y = particle.y + 0.5*(lDelta + rDelta)*math.sin(particle.phi)
 
@@ -66,7 +66,7 @@ class Particles:
         
         print "NORMP P P P ", normP
 
-        if normP < 200:
+        if normP < 100:
            self.particles = [Particle() for _ in range(len(particles))]
 
         else:
