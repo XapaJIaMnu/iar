@@ -12,8 +12,8 @@ for line in map_file:
     map_array[linenum] = processed_line
     linenum = linenum + 1
 
-distjumpX = 10 
-distjumpY = 10 
+distjumpX = 8 
+distjumpY = 8 
 def calcKatets(x, y, angl, dist):
     return (x-int(floor(sin(angl)*(15 + dist*distjumpX))), y+int(floor(cos(angl)*(15 + dist*distjumpY))))
 

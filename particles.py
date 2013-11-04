@@ -35,11 +35,13 @@ class Particles:
             particle.phi = particle.phi - 0.5*(lDelta - rDelta)/(2*R)
             # add gaussian noise with standard diviation SCALE
             particle.phi += np.random.normal(scale=SCALE)
-            particle.prevx = particle.x
-            particle.phi += np.random.normal(scale=SCALE)
-            particle.prevy = particle.y
-            particle.x = particle.x + 0.5*(lDelta + rDelta)*math.cos(particle.phi)
-            particle.y = particle.y + 0.5*(lDelta + rDelta)*math.sin(particle.phi)
+            
+            if np.random.random() > 0.2:
+                particle.prevx = particle.x
+                particle.x = particle.x + 0.5*(lDelta + rDelta)*math.cos(particle.phi)
+            if np.random.random() > 0.2:
+                particle.prevy = particle.y
+                particle.y = particle.y + 0.5*(lDelta + rDelta)*math.sin(particle.phi)
 
     def doCorrection(self, sensorsFrontLeftRightDist):
         particles = self.particles

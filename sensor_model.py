@@ -2,7 +2,7 @@ import math
 from math import sqrt
 import particles
 
-PARTICLES_NUM = 200 
+PARTICLES_NUM = 100 
 
 class SensorModel:
     def __init__(self, s, mapReader):
@@ -254,11 +254,11 @@ class SensorModel:
         return toret
 
 def sensorToCmLeft(sensorvalue):
-    if sensorvalue <= 160:
+    if sensorvalue <= 120:
         toret = 5
-    elif sensorvalue < 200:
+    elif sensorvalue < 160:
         toret = 4
-    elif sensorvalue < 250:
+    elif sensorvalue < 210:
         toret = 3
     elif sensorvalue < 310:
         toret = 2
@@ -267,18 +267,17 @@ def sensorToCmLeft(sensorvalue):
     return toret
 
 def sensorToCmRight(sensorvalue):
-    if sensorvalue <= 160:
+    if sensorvalue <= 120:
         toret = 5
-    elif sensorvalue < 200:
+    elif sensorvalue < 160:
         toret = 4
-    elif sensorvalue < 250:
+    elif sensorvalue < 210:
         toret = 3
     elif sensorvalue < 310:
         toret = 2
     else:
         toret = 1
     return toret
-
 
 
 def sensorToCmFront(sensorvalue):

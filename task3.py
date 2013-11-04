@@ -15,7 +15,7 @@ import sensor_model
 serial = serial.Serial('/dev/ttyS0', timeout=1)
 
 IPLOT = False 
-LOCALIZATION_CALIBRATION_MODE = False 
+LOCALIZATION_CALIBRATION_MODE = False
 
 TURNING_TOWARDS_HOME = False
 GOING_TOWARDS_FOOD = False 
@@ -85,12 +85,12 @@ class Robot:
         for (row, y) in zip(self.map, range(self.rownum)):
             for (col, x) in zip(row, range(self.colnum)):
                 if col == 1:
-                   pygame.draw.circle(arenaSurfaceObj, (0, 0, 0), (x, y), 20, 0)
+                   pygame.draw.circle(arenaSurfaceObj, (0, 0, 0), (x, y), 1, 0)
 
         while(True):
             print time.time()
             #self.windowSurfaceObj.blit(self.mapSurfaceObj, (0, 0))
-            self.windowSurfaceObj.fill((255, 255, 255))
+            self.windowSurfaceObj.blit(arenaSurfaceObj, (0,0))
             for event in pygame.event.get():
                 if event.type == QUIT:
                     pygame.quit()
@@ -99,15 +99,39 @@ class Robot:
                 elif event.type == MOUSEBUTTONUP:
                     print "Click at ", str(event.pos)
                     testNearbyWalls(event.pos[0], event.pos[1], 0) 
-                    pygame.draw.circle(self.windowSurfaceObj, (255, 0, 0), event.pos, 41, 0)
+                    
+                    mapX, mapY = event.pos[0], event.pos[1]
+                    phi = self.reactive.sensors.phi
+                    map_information = self.mapReader.getNearbyWalls(mapX, mapY, phi)
+
+                    robotRadius = 15
+
+                    pygame.draw.circle(self.windowSurfaceObj, (51, 102, 0), (mapX, mapY), robotRadius, 0)
+                    
+                    # forward - red
+                    x, y = map_reader.calcKatets(mapY, mapX, phi, map_information[0])
+                    pygame.draw.circle(self.windowSurfaceObj, (255,0,0), (y, x), 10, 0)
+
+
+                    # left - green
+                    x, y = map_reader.calcKatets(mapY, mapX, phi+np.pi/2, map_information[1])
+                    pygame.draw.circle(self.windowSurfaceObj, (0,255,0), (y, x), 10, 0)
+
+
+                    # right - blue
+                    x, y = map_reader.calcKatets(mapY, mapX, phi-np.pi/2, map_information[2])
+                    pygame.draw.circle(self.windowSurfaceObj, (0,0,255), (y, x), 10, 0)
+       
                 elif event.type == KEYDOWN:
+                    if event.key == K_c:
+                        robot.reactive.moveahead(0)
+                        LOCALIZATION_CALIBRATION_MODE = not LOCALIZATION_CALIBRATION_MODE
                     if event.key == K_ESCAPE:
                         pygame.event.post(pygame.event.Event(QUIT))
-            self.windowSurfaceObj.blit(arenaSurfaceObj, (0,0))
 
             if LOCALIZATION_CALIBRATION_MODE:
                 pygame.display.update()
-                self.clock.tick(2) # run 20 times per second, roughly 50ms
+                self.clock.tick(1) # run 20 times per second, roughly 50ms
                 continue
             #print
             #print
