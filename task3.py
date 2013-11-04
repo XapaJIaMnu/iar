@@ -147,61 +147,7 @@ class Robot:
                 mX, mY = robotToMap(x, y)
                 pygame.draw.line(self.windowSurfaceObj, (0, 0, 255), (prevx, prevy), (mX, mY))
                 prevx, prevy = (mX, mY)
-            
-            if CHECKING_HOME:
-                self.reactive.sensors.updateModel()
-                self.reactive.sensors.updatePos()
-                angle = (180-robot.reactive.sensors.getAngleFromHome())%360
-                other_angle = 360-angle
-                if self.reactive.sensors.sensefront() < 2:
-                    if TOUCHED_BACK:
-                        CHECKED_HOME = True
-                        TURNING_TOWARDS_HOME = True 
-                        continue
-                    TOUCHED_BACK = True
-                    angle = -angle
-                #print "Turning towards food angle is " + str(angle) + " other one is " + str(other_angle)
-
-                distToFood = self.reactive.sensors.getDistanceFromFood()
-
-                if angle > ANGLE_THRESH and other_angle > ANGLE_THRESH:
-                if angle < ANGLE_PRECISE_THRESH or other_angle < ANGLE_PRECISE_THRESH:
-                    turnSpeed = 1
-                elif angle < ANGLE_CAREFUL_THRESH or other_angle < ANGLE_CAREFUL_THRESH:
-                    turnSpeed = 2
-                else:
-                    turnSpeed = 5 
-                if angle > 180:
-                    print "Suggesting left"
-                    suggestAction = ("turnRight", turnSpeed)
-                else:
-                    print "Suggesting right"
-                    suggestAction = ("turnLeft", turnSpeed)
-                
-                if distToHome > DIST_THRESH:
-                    if distToHome < DIST_NEAR:
-                        speed = 2
-                    else:
-                        speed = 5
-                    suggestAction = ("goStraight", speed)
-                    extra_sleep += 0.1
-                else:
-                    print "Home!!!"
-                    self.serial.write('D,0,0\n')
-                    self.serial.readline()
-                    #Flash LED lights here.
-                    #Change state 6 times which equals to flashing three times
-                    for i in range(6):
-                        time.sleep(0.3)
-                        self.serial.write('L,1,2\n')
-                        self.serial.readline()
-                        self.serial.write('L,0,2\n')
-            
-            elif self.reactive.sensors.haveFood and GOING_TOWARDS_FOOD:
-                GOING_TOWARDS_FOOD = False
-                TURNING_TOWARDS_HOME = True
-
-            elif GOING_TOWARDS_FOOD:
+            if GOING_TOWARDS_FOOD:
                 #self.serial.write('D,0,0\n')
                 #self.serial.readline()
                 #time.sleep(0.1)
@@ -309,6 +255,7 @@ class Robot:
                 if distToHome < DIST_NEAR and distToHome > prevDistToHome:
                     if not CHECKED_HOME:
                         CHECKING_HOME = True 
+                        TOUCHED_BACK = False
                     else:
                         CHECKED_HOME = False
                         print "Home!!!"

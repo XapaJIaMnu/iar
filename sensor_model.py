@@ -35,6 +35,7 @@ class SensorModel:
             ok = True
         except:
             self.updatePos()
+            return
         if not ok:
             return
 
